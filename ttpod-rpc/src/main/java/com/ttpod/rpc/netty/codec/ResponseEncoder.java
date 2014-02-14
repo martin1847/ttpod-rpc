@@ -6,6 +6,8 @@ import com.ttpod.rpc.ResponseBean;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -18,6 +20,9 @@ import static io.netty.buffer.Unpooled.wrappedBuffer;
  */
 @ChannelHandler.Sharable
 public class ResponseEncoder extends MessageToMessageEncoder<ResponseBean> {
+
+
+
 
 
     /**
@@ -47,7 +52,7 @@ public class ResponseEncoder extends MessageToMessageEncoder<ResponseBean> {
      */
 
     static final int DEAULT_ENCODER_BUFFSIZE = Integer.getInteger("ResponseEncoder.buffer",1024);
-
+    static final Logger logger = LoggerFactory.getLogger(ResponseEncoder.class);
     @Override
     protected void encode(
             ChannelHandlerContext ctx, ResponseBean msg, List<Object> out) throws Exception {
@@ -55,8 +60,7 @@ public class ResponseEncoder extends MessageToMessageEncoder<ResponseBean> {
         byte[] data = ProtostuffIOUtil.toByteArray(msg, ResponseDecoder.schema, LinkedBuffer.allocate(DEAULT_ENCODER_BUFFSIZE));
 
         if( data.length > DEAULT_ENCODER_BUFFSIZE){
-
-            System.out.println("encode QueryRes bytes: " + data.length);
+            logger.info("encode QueryRes bytes: {}", data.length);
         }
 //        schema.newMessage();
         out.add(wrappedBuffer(data));
