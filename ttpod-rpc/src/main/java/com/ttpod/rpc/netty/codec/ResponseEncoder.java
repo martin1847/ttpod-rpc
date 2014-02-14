@@ -45,13 +45,16 @@ public class ResponseEncoder extends MessageToMessageEncoder<ResponseBean> {
      RuntimeSchema.getSchema(clazz, strategy);
 
      */
+
+    static final int DEAULT_ENCODER_BUFFSIZE = Integer.getInteger("ResponseEncoder.buffer",1024);
+
     @Override
     protected void encode(
             ChannelHandlerContext ctx, ResponseBean msg, List<Object> out) throws Exception {
 //        ExplicitIdStrategy.Registry.
-        byte[] data = ProtostuffIOUtil.toByteArray(msg, ResponseDecoder.schema, LinkedBuffer.allocate(1024));
+        byte[] data = ProtostuffIOUtil.toByteArray(msg, ResponseDecoder.schema, LinkedBuffer.allocate(DEAULT_ENCODER_BUFFSIZE));
 
-        if( data.length > 512){
+        if( data.length > DEAULT_ENCODER_BUFFSIZE){
 
             System.out.println("encode QueryRes bytes: " + data.length);
         }
