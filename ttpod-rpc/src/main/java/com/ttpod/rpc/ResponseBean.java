@@ -13,6 +13,7 @@ public class ResponseBean {
 
     Object data;
 
+    public ResponseBean(){}
 
     public int getCode() {
         return code;
@@ -58,4 +59,13 @@ public class ResponseBean {
     }
 
     short _req_id;
+    public ResponseBean(int code){this.code=code;}
+
+
+    public static ResponseBean code0(){
+        return new ResponseBean(0);
+    }
+    public static ResponseBean code1(){
+        return new ResponseBean(1);
+    }
 }
