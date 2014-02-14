@@ -49,6 +49,9 @@ public class ResponseEncoder extends MessageToMessageEncoder<ResponseBean> {
      // Then when your app needs a schema, use it.
      RuntimeSchema.getSchema(clazz, strategy);
 
+     DEFAULT_JVM_OPTS="-DResponseEncoder.buffer=32768"
+
+
      */
 
     static final int DEAULT_ENCODER_BUFFSIZE = Integer.getInteger("ResponseEncoder.buffer",1024);
