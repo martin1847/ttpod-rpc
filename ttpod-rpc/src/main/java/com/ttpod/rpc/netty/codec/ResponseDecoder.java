@@ -8,6 +8,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -19,7 +21,9 @@ import java.util.List;
 @ChannelHandler.Sharable
 public class ResponseDecoder extends MessageToMessageDecoder<ByteBuf> {
 
+    static final Logger logger = LoggerFactory.getLogger(ResponseDecoder.class);
     static final Schema<ResponseBean> schema =  RuntimeSchema.getSchema(ResponseBean.class);
+
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
         final byte[] array;
@@ -37,5 +41,11 @@ public class ResponseDecoder extends MessageToMessageDecoder<ByteBuf> {
         ResponseBean pojo = new ResponseBean();
         ProtostuffIOUtil.mergeFrom(array, offset, length, pojo, schema);
         out.add(pojo);
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error("MayBe Required [pojo class] NOT Found For decode .", cause);
+        super.exceptionCaught(ctx, cause);
     }
 }
