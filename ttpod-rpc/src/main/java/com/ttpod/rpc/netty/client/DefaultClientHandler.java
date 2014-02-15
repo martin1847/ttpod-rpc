@@ -13,6 +13,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -54,17 +55,6 @@ public class DefaultClientHandler extends SimpleChannelInboundHandler<ResponseBe
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         channel = ctx.channel();
     }
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.warn("Unexpected exception from downstream.MayBe server is disconnted.", cause);
-        //TODO reconnect use zookeeper !~
-        ctx.close();
-        if(null!=channelPool){
-            channelPool.remove(this);
-        }
-    }
-
-
 
     @Override
     public void rpc(final RequestBean req, ResponseObserver observer) {
@@ -106,4 +96,31 @@ public class DefaultClientHandler extends SimpleChannelInboundHandler<ResponseBe
     }
 
     ChannelPool<ClientHandler> channelPool;
+
+
+
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        //TODO reconnect use zookeeper !~
+
+        if(cause instanceof IOException){
+            ctx.close();
+            if(null!=channelPool){
+                channelPool.remove(this);
+                logger.info("IOException got . remove self from pool .", cause);
+            }
+        }
+        logger.error("Unexpected exception .MayBe server is disconnted.", cause);
+
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        if(null!=channelPool){
+            channelPool.remove(this);
+            logger.info("channelInactive . remove self from pool .");
+        }
+        super.channelInactive(ctx);
+    }
 }

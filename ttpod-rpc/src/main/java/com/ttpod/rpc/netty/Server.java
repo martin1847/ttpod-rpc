@@ -6,6 +6,8 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * date: 14-1-7 下午4:20
@@ -14,6 +16,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
  */
 public class Server {
 
+    static final Logger logger = LoggerFactory.getLogger(Server.class);
 
     int port;
     EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
@@ -69,6 +72,17 @@ public class Server {
 
 
     public void shutdown(){
+
+        if(null != groupManager){
+            groupManager.shutdown();
+            logger.info("wait 2s to exit group,so clients not use this server.");
+            try {
+                Thread.sleep(2000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         channel.close();
         workerGroup.shutdownGracefully();
         bossGroup.shutdownGracefully();

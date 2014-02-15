@@ -83,6 +83,11 @@ public class DefaultGroupManager implements Runnable,GroupManager {
     @Override
     public void shutdown() {
         if( null != exe ) exe.shutdownNow();
+        if(null != zk) try {
+            zk.close();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 

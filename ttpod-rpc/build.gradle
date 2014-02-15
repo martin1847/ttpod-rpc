@@ -38,7 +38,7 @@ dependencies {
     //testCompile 'com.lmax:disruptor:3.2.0'
     testCompile 'org.springframework:spring-context:3.2.7.RELEASE'
     testCompile 'org.eclipse.jetty.npn:npn-api:8.1.2.v20120308'
-    testCompile 'com.ttpod:search-rpc:1.0.1'
+    testCompile 'com.ttpod:search-rpc:1.0.2'
 // java -Xbootclasspath/p:<path_to_npn_boot_jar>
 //  compile 'org.mortbay.jetty.npn:npn-boot:8.1.2.v20120308'
 
