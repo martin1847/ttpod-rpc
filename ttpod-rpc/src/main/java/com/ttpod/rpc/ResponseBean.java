@@ -7,6 +7,8 @@ package com.ttpod.rpc;
  */
 public class ResponseBean {
 
+    short _req_id;
+
     int code;
     int rows;
     int pages;
@@ -58,7 +60,7 @@ public class ResponseBean {
                 '}';
     }
 
-    short _req_id;
+
     public ResponseBean(int code){this.code=code;}
 
 

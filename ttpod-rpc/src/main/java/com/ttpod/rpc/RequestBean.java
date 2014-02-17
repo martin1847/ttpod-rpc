@@ -14,9 +14,14 @@ public class RequestBean {
     public static final byte SECOND_SERVICE = 2;
     public static final byte THIRD_SERVICE = 3;
 
+
+
+    public static final short UNSIGNED_BYTE_MAX_SIZE = 0xff;
+
     byte service ;
-    short page ;
-    short size ;
+    short page ;// unsigned byte. MAX VALUE =0xff
+    short size ;// unsigned byte.
+    short _req_id;
     String data ;
 
     public RequestBean(){
@@ -77,5 +82,5 @@ public class RequestBean {
                 '}';
     }
 
-    short _req_id;
+
 }
