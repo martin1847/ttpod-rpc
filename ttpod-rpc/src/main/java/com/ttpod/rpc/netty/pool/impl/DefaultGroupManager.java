@@ -7,6 +7,7 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,25 +33,11 @@ public class DefaultGroupManager implements Runnable,GroupManager {
     }
     public DefaultGroupManager(ZooKeeper zk, String groupName,GroupMemberObserver montior) {
         this.zk = zk;
-
-        if(!groupName.startsWith("/")){
-            groupName = "/" + groupName;
-        }
-        this.groupName = groupName;
-
+        this.groupName = Zoo.flipPath(groupName);
         this.montior = montior;
-        try {
-            Stat stat = zk.exists(groupName,false);
-            if (null == stat){// Auto Create
-                zk.create(groupName,
-                        null /* data */,
-                        ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
-            }
-        } catch (KeeperException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        boolean successCreate =   Zoo.syncCreate(this.groupName,zk);
 
+        assert successCreate;
         if(montior != null){
             exe = Executors.newSingleThreadExecutor();
             exe.execute(this);
