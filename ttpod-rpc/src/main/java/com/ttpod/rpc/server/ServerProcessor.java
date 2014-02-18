@@ -21,12 +21,11 @@ public interface ServerProcessor {
 
     final class RegCenter {
 
-        static final RegCenter defaultInstance = new RegCenter();
+        public static final RegCenter DEFAULT = new RegCenter();
 
-        public static RegCenter  getInstance(){
-            return defaultInstance;
-        }
-        protected RegCenter(){}
+//        protected RegCenter(){}
+
+
         private List<ServerProcessor> processors = new ArrayList<>();
         {
             processors.add(new ServerProcessor() {
@@ -56,6 +55,9 @@ public interface ServerProcessor {
             processors.add(index,s);
         }
 
+        public  synchronized void setProcessors(List<ServerProcessor> processors) {
+            this.processors.addAll(processors);
+        }
         /**
          * after call this, you cann't add more Processor to RegCenter.
          * @return
