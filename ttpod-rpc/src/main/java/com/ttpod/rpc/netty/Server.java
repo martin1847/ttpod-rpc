@@ -19,11 +19,15 @@ public class Server {
     static final Logger logger = LoggerFactory.getLogger(Server.class);
 
     int port;
+
     EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
     EventLoopGroup workerGroup = new NioEventLoopGroup();
     Channel channel;
     ChannelHandler channelHandler;
     GroupManager groupManager;
+
+    public Server(){}
+
     public Server(ChannelHandler channelHandler) {
         this(channelHandler,8080,null);
     }
@@ -35,12 +39,10 @@ public class Server {
         this.channelHandler = channelHandler;
         this.port = port;
         this.groupManager = groupManager;
-
-        start();
     }
 
 
-    private void start(){
+    public void start(){
 
         try {
             ServerBootstrap b = new ServerBootstrap(); // (2)
@@ -83,9 +85,25 @@ public class Server {
             }
         }
 
-        channel.close();
+        if(null!= channel){
+            channel.close();
+        }
         workerGroup.shutdownGracefully();
         bossGroup.shutdownGracefully();
+    }
+
+
+
+    public void setChannelHandler(ChannelHandler channelHandler) {
+        this.channelHandler = channelHandler;
+    }
+
+    public void setGroupManager(GroupManager groupManager) {
+        this.groupManager = groupManager;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
 

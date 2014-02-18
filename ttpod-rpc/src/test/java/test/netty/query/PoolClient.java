@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
  */
 public class PoolClient {
     public static void main(String[] args) throws Exception {
-        final ChannelPool<ClientHandler> pool = new ZkChannelPool("192.168.8.12:2181","com.ttpod.search");
+        final ChannelPool<ClientHandler> pool = new ZkChannelPool("192.168.8.12:2181","SEARCH/ttpod/ali");
         System.out.println("Pls Input a  word ..");
 //      final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
