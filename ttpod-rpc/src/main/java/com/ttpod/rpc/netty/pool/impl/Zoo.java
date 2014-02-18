@@ -1,6 +1,7 @@
 package com.ttpod.rpc.netty.pool.impl;
 
 import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -56,6 +57,17 @@ public  abstract class Zoo {
         if(! flipPath.startsWith(UNIX_FILE_SEPARATOR)){
             throw new RuntimeException("flipPath must starts with / :" + flipPath);
         }
+
+        Stat stat = null;
+        try {
+            stat = zooKeeper.exists(flipPath, false);
+        } catch (KeeperException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        if(null != stat){
+            return true;
+        }
+
         final AtomicBoolean success = new AtomicBoolean(false);
         final CountDownLatch latch = new CountDownLatch(1);
         AsyncCallback.StringCallback cb = new AsyncCallback.StringCallback() {
