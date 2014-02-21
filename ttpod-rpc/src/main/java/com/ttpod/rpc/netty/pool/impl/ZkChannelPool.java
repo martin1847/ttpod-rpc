@@ -10,6 +10,8 @@ import com.ttpod.rpc.pool.GroupManager;
 import com.ttpod.rpc.pool.GroupMemberObserver;
 import io.netty.channel.Channel;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -25,7 +27,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ZkChannelPool implements ChannelPool<ClientHandler> {
 
-    int i;
+    static final Logger logger = LoggerFactory.getLogger(ZkChannelPool.class);
+
+
     CopyOnWriteArrayList<ClientHandler> handlers = new CopyOnWriteArrayList<>();
 
     String zkAddress ;
@@ -49,6 +53,8 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
 
     ZooKeeper zooKeeper;
     GroupManager groupManager;
+
+    int tick;
     public void init(){
         zooKeeper = Zoo.connect(zkAddress);
         groupManager = new DefaultGroupManager(zooKeeper,groupName,new GroupMemberObserver() {
@@ -56,12 +62,28 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
                 setUpClient(currentNodes);
             }
         });
+        resetTickPeriod();
+    }
+
+    void resetTickPeriod(){
+        new Thread(new Runnable() {
+            static final long ONE_HOUR = 3600 * 1000L;
+            public void run() {
+                while (true){
+                    try {
+                        Thread.sleep(ONE_HOUR);
+                    } catch (InterruptedException ignored) {
+                    }
+                    tick = 0;
+                }
+            }
+        },"ZkChannelPool.resetTickPeriod").start();
     }
 
 
     @Override
     public ClientHandler next() {// allow i to use twice.
-        return handlers.get( i++ % handlers.size() );
+        return handlers.get( tick++ % handlers.size() );
     }
 
     @Override
@@ -72,12 +94,10 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
     @Override
     public void shutdown() {
         for( Map.Entry<String,CloseableChannelFactory> entry: connPool.entrySet()){
-            System.out.println(
-                    "close  connTo :" + entry.getKey()
-            );
+            logger.info("Disconnect From : {}", entry.getKey());
             entry.getValue().shutdown();
         }
-        System.out.println("shutdown groupManager ...");
+        logger.info("Shutdown GroupManager ...");
         groupManager.shutdown();
     }
 
@@ -110,7 +130,7 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
             try {
                 CloseableChannelFactory fac = new Client(new InetSocketAddress(ip,port),new DefaultClientInitializer());
                 connPool.put(addr,fac);
-                System.out.println("Success conn To : " + addr);
+                logger.info("Success Connect To  : {}" , addr);
                 for(int i = clientsPerServer;i>0;i--){
                     handlers.add(fetchHandler(fac.newChannel()));
                 }
