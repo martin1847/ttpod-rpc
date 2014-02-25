@@ -63,6 +63,14 @@ public class ResponseBean {
 
     public ResponseBean(int code){this.code=code;}
 
+    /**
+     * used for Exception .
+     */
+    public static final int ERROR = -1;
+
+    public static ResponseBean error(){
+        return new ResponseBean(ERROR);
+    }
 
     public static ResponseBean code0(){
         return new ResponseBean(0);

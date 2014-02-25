@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
  */
 @ChannelHandler.Sharable
 public class DefaultServerHandler extends SimpleChannelInboundHandler<RequestBean>  implements ServerHandler {
+    static final Logger logger = LoggerFactory.getLogger(DefaultServerHandler.class);
+
     protected void messageReceived(ChannelHandlerContext ctx, RequestBean msg) throws Exception {
         short reqId = InnerBindUtil.id(msg);
         ResponseBean data = handleRequest(msg);
@@ -43,10 +45,16 @@ public class DefaultServerHandler extends SimpleChannelInboundHandler<RequestBea
 
 
     public ResponseBean handleRequest(RequestBean request) throws Exception{
-        return processors[request.getService()].handle(request);
+        try{
+            return   processors[request.getService()].handle(request);
+        }catch (Throwable e){//For RPC must Notify Client .
+            logger.error("handleRequest Error ",e);
+            ResponseBean res = ResponseBean.error();
+            res.setData(e.getLocalizedMessage());
+            return res;
+        }
     }
 
-    Logger logger = LoggerFactory.getLogger(DefaultServerHandler.class);
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         logger.error("Unexpected exception from downstream.", cause);
         ctx.close();
@@ -57,7 +65,7 @@ public class DefaultServerHandler extends SimpleChannelInboundHandler<RequestBea
         super.channelInactive(ctx);
 
         System.out.println(
-                "channelInactive : " + ctx.channel().localAddress()
+                "channelInactive : " + ctx.channel().remoteAddress()
         );
         ctx.close();
     }
