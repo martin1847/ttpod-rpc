@@ -68,6 +68,11 @@ public class ResponseBean {
      */
     public static final int ERROR = -1;
 
+
+    public boolean success() {
+        return code != ERROR;
+    }
+
     public static ResponseBean error(){
         return new ResponseBean(ERROR);
     }
