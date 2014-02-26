@@ -88,7 +88,7 @@ public class RequestBean {
     }
 
     public int safeSize(){
-        return Math.max(page,1);
+        return Math.max(size,1);
     }
 
 }
