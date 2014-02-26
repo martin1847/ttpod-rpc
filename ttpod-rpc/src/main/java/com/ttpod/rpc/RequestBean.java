@@ -17,10 +17,11 @@ public class RequestBean {
 
 
     public static final short UNSIGNED_BYTE_MAX_SIZE = 0xff;
+    public static final short DEFAULT_SIZE = (short)Math.max(5,Integer.getInteger("RequestBean.size",5)&UNSIGNED_BYTE_MAX_SIZE);
 
     byte service ;
-    short page ;// unsigned byte. MAX VALUE =0xff
-    short size ;// unsigned byte.
+    short page  = 1;// unsigned byte. MAX VALUE =0xff
+    short size  = DEFAULT_SIZE;// unsigned byte.
     short _req_id;
     String data ;
 
@@ -82,5 +83,12 @@ public class RequestBean {
                 '}';
     }
 
+    public int safePage(){
+        return Math.max(page,1);
+    }
+
+    public int safeSize(){
+        return Math.max(page,1);
+    }
 
 }

@@ -27,7 +27,7 @@ public class QueryServer {
         );
 
         final DefaultServerHandler serverHandler = new DefaultServerHandler();
-        ServerProcessor.RegCenter regCenter = ServerProcessor.RegCenter.getInstance();
+        ServerProcessor.RegCenter regCenter = ServerProcessor.RegCenter.DEFAULT;
 
         regCenter.regProcessor(
             new AbstractServerProcessor() {
