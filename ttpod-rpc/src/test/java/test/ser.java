@@ -11,6 +11,7 @@ import com.ttpod.rpc.ResponseBean;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * date: 14-2-26 下午1:52
@@ -74,6 +75,25 @@ public class ser {
         System.out.println("map decode cost : " + t +" ms, avg : " + t/test);
 
 
+
+        Bean bean = JSONUtil.jsonToBean(json,Bean.class);
+        Map map = JSONUtil.jsonToMap(json);
+
+
+        l = System.currentTimeMillis();
+        for(int i = 0;i<test;i++){
+            JSONUtil.beanToJson(bean);
+        }
+        t = System.currentTimeMillis() -l;
+        System.out.println("beanToJson cost : " + t +" ms, avg : " + t/test);
+
+
+        l = System.currentTimeMillis();
+        for(int i = 0;i<test;i++){
+            JSONUtil.beanToJson(map);
+        }
+        t = System.currentTimeMillis() -l;
+        System.out.println("mapToJson cost : " + t +" ms, avg : " + t/test);
 
     }
 
