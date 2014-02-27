@@ -52,6 +52,9 @@ public class RequestBean {
         return page;
     }
 
+    public void setPage(int page) {
+        this.page = (short)page;
+    }
     public void setPage(short page) {
         this.page = page;
     }
@@ -62,6 +65,9 @@ public class RequestBean {
 
     public void setSize(short size) {
         this.size = size;
+    }
+    public void setSize(int size) {
+        this.size = (short)size;
     }
 
     public String getData() {
@@ -89,6 +95,13 @@ public class RequestBean {
 
     public int safeSize(){
         return Math.max(size,1);
+    }
+
+
+    public static RequestBean  req(Enum service){
+        RequestBean req = new RequestBean();
+        req.setService((byte)service.ordinal());
+        return req;
     }
 
 }
