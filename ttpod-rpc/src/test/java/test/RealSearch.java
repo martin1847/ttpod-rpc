@@ -24,7 +24,7 @@ public class RealSearch {
 
     public static void main(String[] args) throws Exception {
         CloseableChannelFactory client = new Client(
-                new InetSocketAddress("192.168.8.12", 6666), new DefaultClientInitializer());
+                new InetSocketAddress("192.168.8.12", 6000), new DefaultClientInitializer());
         // Read commands from the stdin.
         final ClientHandler handler = client.newChannel().pipeline().get(DefaultClientHandler.class);
         System.out.println("Pls Input a  word ..");

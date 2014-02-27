@@ -21,7 +21,7 @@ import java.net.SocketAddress;
 public class Client implements CloseableChannelFactory {
     EventLoopGroup workerGroup;
 
-    public Client(SocketAddress socketAddress, ChannelHandler channelHandler) throws InterruptedException {
+    public Client(SocketAddress socketAddress, ChannelHandler channelHandler) {
         this(socketAddress,true, channelHandler);
     }
 
