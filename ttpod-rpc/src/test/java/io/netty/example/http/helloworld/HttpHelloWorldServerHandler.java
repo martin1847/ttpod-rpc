@@ -36,9 +36,11 @@ public class HttpHelloWorldServerHandler extends ChannelHandlerAdapter {
     }
 
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("msg: " + msg);
         if (msg instanceof HttpRequest) {
             HttpRequest req = (HttpRequest) msg;
 
+            System.out.println( req.getUri());
             if (is100ContinueExpected(req)) {
                 ctx.write(new DefaultFullHttpResponse(HTTP_1_1, CONTINUE));
             }

@@ -43,7 +43,7 @@ public class QueryServer {
         );
         new Server(new DefaultServerInitializer(serverHandler),6666,new DefaultGroupManager(
               "192.168.8.12:2181","com.ttpod.search"
-        ));
+        )).start();
 
     }
 }

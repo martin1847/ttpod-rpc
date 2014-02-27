@@ -26,7 +26,7 @@ dependencies {
 //    compile 'com.dyuproject.protostuff:protostuff-runtime-registry:1.0.8'
     runtime 'com.google.protobuf:protobuf-java:2.5.0'
 
-
+    optional 'com.alibaba:fastjson:1.1.39'
 
     optional('org.apache.zookeeper:zookeeper:3.4.5'){
         exclude module: 'slf4j-log4j12'

@@ -44,7 +44,7 @@ public class HttpHelloWorldServer {
             b.group(bossGroup, workerGroup)
              .channel(NioServerSocketChannel.class)
              .childHandler(new HttpHelloWorldServerInitializer());
-
+            System.out.println("listen : 8080");
             Channel ch = b.bind(port).sync().channel();
             ch.closeFuture().sync();
         } finally {
@@ -61,5 +61,6 @@ public class HttpHelloWorldServer {
             port = 8080;
         }
         new HttpHelloWorldServer(port).run();
+
     }
 }

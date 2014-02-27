@@ -70,7 +70,7 @@ class TelnetServerHandler extends SimpleChannelInboundHandler<String> {
             response = "Have a good day!\r\n";
             close = true;
         } else {
-            response =  usage();
+            response =  usage(processors);
         }
 
         // We do not need to write a ChannelBuffer here.
@@ -99,7 +99,7 @@ class TelnetServerHandler extends SimpleChannelInboundHandler<String> {
         messageReceived(ctx, msg);
     }
 
-    String usage(){
+    static   String usage( Map<String,ServerProcessor> processors){
         StringBuilder sb = new StringBuilder(300);
         sb.append("=========Useage=======\n\r");
         for(Map.Entry<String,ServerProcessor> entry : processors.entrySet()){

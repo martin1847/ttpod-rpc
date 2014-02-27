@@ -58,6 +58,7 @@ public class HttpSnoopServerHandler extends SimpleChannelInboundHandler<Object> 
         if (msg instanceof HttpRequest) {
             HttpRequest request = this.request = (HttpRequest) msg;
 
+
             if (is100ContinueExpected(request)) {
                 send100Continue(ctx);
             }
@@ -81,6 +82,9 @@ public class HttpSnoopServerHandler extends SimpleChannelInboundHandler<Object> 
             }
 
             QueryStringDecoder queryStringDecoder = new QueryStringDecoder(request.getUri());
+            System.out.println(
+                    queryStringDecoder.path()
+            );
             Map<String, List<String>> params = queryStringDecoder.parameters();
             if (!params.isEmpty()) {
                 for (Entry<String, List<String>> p: params.entrySet()) {
