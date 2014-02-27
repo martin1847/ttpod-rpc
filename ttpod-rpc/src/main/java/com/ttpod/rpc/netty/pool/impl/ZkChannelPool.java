@@ -108,6 +108,7 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
     }
 
 
+    static final boolean USE_NIO = ! Boolean.getBoolean("Client.BIO");
     void setUpClient(List<String> ipPorts){
 
         Set<String> clsoed =  connPool.keySet();
@@ -127,15 +128,11 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
             //TODO server weight
 //            zooKeeper.getData(groupName+"/"+addr,false, null);
 
-            try {
-                CloseableChannelFactory fac = new Client(new InetSocketAddress(ip,port),new DefaultClientInitializer());
-                connPool.put(addr,fac);
-                logger.info("Success Connect To  : {}" , addr);
-                for(int i = clientsPerServer;i>0;i--){
-                    handlers.add(fetchHandler(fac.newChannel()));
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            CloseableChannelFactory fac = new Client(new InetSocketAddress(ip,port),USE_NIO,new DefaultClientInitializer());
+            connPool.put(addr,fac);
+            logger.info("Success Connect To  : {}" , addr);
+            for(int i = clientsPerServer;i>0;i--){
+                handlers.add(fetchHandler(fac.newChannel()));
             }
 
         }
