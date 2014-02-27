@@ -6,8 +6,12 @@ import com.ttpod.rpc.ResponseBean;
 import com.ttpod.rpc.server.ServerHandler;
 import com.ttpod.rpc.server.ServerProcessor;
 import io.netty.channel.*;
+import io.netty.channel.socket.ServerSocketChannel;
+import io.netty.channel.socket.SocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.InetSocketAddress;
 
 /**
  * date: 14-2-9 下午1:11
@@ -56,17 +60,21 @@ public class DefaultServerHandler extends SimpleChannelInboundHandler<RequestBea
     }
 
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.info("exceptionCaught From {} " , ctx.channel().remoteAddress());
         logger.error("Unexpected exception from downstream.", cause);
         ctx.close();
     }
 
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        logger.info("channelActive From {} " , ctx.channel().remoteAddress());
+    }
+
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
-
-        System.out.println(
-                "channelInactive : " + ctx.channel().remoteAddress()
-        );
+        logger.info("channelInactive From {} " , ctx.channel().remoteAddress());
         ctx.close();
+        super.channelInactive(ctx);
     }
 }
