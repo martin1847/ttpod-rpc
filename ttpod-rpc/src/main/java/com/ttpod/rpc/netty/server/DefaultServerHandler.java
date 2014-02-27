@@ -5,13 +5,12 @@ import com.ttpod.rpc.RequestBean;
 import com.ttpod.rpc.ResponseBean;
 import com.ttpod.rpc.server.ServerHandler;
 import com.ttpod.rpc.server.ServerProcessor;
-import io.netty.channel.*;
-import io.netty.channel.socket.ServerSocketChannel;
-import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.net.InetSocketAddress;
 
 /**
  * date: 14-2-9 下午1:11
