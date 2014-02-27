@@ -17,12 +17,16 @@ dependencies {
     compile 'io.netty:netty-all:4.0.15.Final'//4.0.13.Final'
 
     compile 'org.slf4j:slf4j-api:1.7.5'
-    compile 'commons-lang:commons-lang:2.6'
+//    compile 'commons-lang:commons-lang:2.6'
 
+    //https://code.google.com/p/protostuff/wiki/ThingsYouNeedToKnow
     compile 'com.dyuproject.protostuff:protostuff-core:1.0.8'
     compile 'com.dyuproject.protostuff:protostuff-runtime:1.0.8'
+    //https://code.google.com/p/protostuff/wiki/ProtostuffRuntime#Performance_guidelines
+//    compile 'com.dyuproject.protostuff:protostuff-runtime-registry:1.0.8'
     runtime 'com.google.protobuf:protobuf-java:2.5.0'
-    optional 'com.dyuproject.protostuff:protostuff-runtime-registry:1.0.8'
+
+
 
     optional('org.apache.zookeeper:zookeeper:3.4.5'){
         exclude module: 'slf4j-log4j12'
