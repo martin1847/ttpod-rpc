@@ -73,7 +73,7 @@ public class ResponseBean {
         return code != ERROR;
     }
 
-    public boolean isEmpty() {
+    public boolean empty() {
         return rows == 0 || null == data;
     }
 
