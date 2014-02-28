@@ -28,7 +28,7 @@ public class SimpleHttpServerInitializer extends ChannelInitializer<SocketChanne
         ChannelPipeline pipeline = ch.pipeline();
 
         pipeline.addLast("decoder", new HttpRequestDecoder());
-        pipeline.addLast("aggregator", new HttpObjectAggregator(65536));
+        pipeline.addLast("aggregator", new HttpObjectAggregator(8192));
         pipeline.addLast("encoder", new HttpResponseEncoder());
 //        pipeline.addLast("chunkedWriter", new ChunkedWriteHandler());
         pipeline.addLast("handler", new SimpleHttpServerHandler(processors));

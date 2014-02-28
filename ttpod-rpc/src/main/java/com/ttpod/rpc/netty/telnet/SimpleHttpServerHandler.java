@@ -88,7 +88,7 @@ class SimpleHttpServerHandler extends SimpleChannelInboundHandler<FullHttpReques
 
     void write(String json,ChannelHandlerContext ctx,FullHttpRequest request){
         FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK,Unpooled.copiedBuffer(json, CharsetUtil.UTF_8));
-        response.headers().set(CONTENT_TYPE, "text/json; charset=UTF-8");
+        response.headers().set(CONTENT_TYPE, "text/plain; charset=UTF-8");
         response.headers().set(CONTENT_LENGTH, response.content().readableBytes());
         boolean keepAlive = isKeepAlive(request);
 
