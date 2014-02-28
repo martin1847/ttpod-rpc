@@ -31,6 +31,7 @@ dependencies {
     optional('org.apache.zookeeper:zookeeper:3.4.5'){
         exclude module: 'slf4j-log4j12'
         exclude module: 'log4j'
+        exclude module: 'jline'
         exclude module: 'jackson-mapper-asl'
     }
 
