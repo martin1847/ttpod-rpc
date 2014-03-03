@@ -46,8 +46,11 @@ public class DefaultServerHandler extends SimpleChannelInboundHandler<RequestBea
         this.processors = processors;
     }
 
+    static final int SLOW_LIMIT = Integer.getInteger("Processor.slow.ms",1000);
 
     public ResponseBean handleRequest(RequestBean request) throws Exception{
+        //TODO use SystemTimer instead of currentTimeMillis
+        long watch = System.currentTimeMillis();
         try{
             return   processors[request.getService()].handle(request);
         }catch (Throwable e){//For RPC must Notify Client .
@@ -55,6 +58,11 @@ public class DefaultServerHandler extends SimpleChannelInboundHandler<RequestBea
             ResponseBean res = ResponseBean.error();
             res.setData(e.getLocalizedMessage());
             return res;
+        }finally {
+            watch = System.currentTimeMillis() - watch;
+            if(watch > SLOW_LIMIT){
+                logger.warn("request {} cost : {} ms",request,watch);
+            }
         }
     }
 
