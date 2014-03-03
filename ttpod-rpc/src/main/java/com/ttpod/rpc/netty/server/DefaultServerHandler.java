@@ -54,14 +54,14 @@ public class DefaultServerHandler extends SimpleChannelInboundHandler<RequestBea
         try{
             return   processors[request.getService()].handle(request);
         }catch (Throwable e){//For RPC must Notify Client .
-            logger.error("handleRequest Error ",e);
+            logger.error("handle req "+request+" Error ",e);
             ResponseBean res = ResponseBean.error();
             res.setData(e.getLocalizedMessage());
             return res;
         }finally {
             watch = System.currentTimeMillis() - watch;
             if(watch > SLOW_LIMIT){
-                logger.warn("request {} cost : {} ms",request,watch);
+                logger.warn("req {} cost : {} ms",request,watch);
             }
         }
     }
