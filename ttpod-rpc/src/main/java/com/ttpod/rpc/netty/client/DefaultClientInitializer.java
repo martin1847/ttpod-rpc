@@ -30,6 +30,11 @@ public class DefaultClientInitializer extends ChannelInitializer<SocketChannel> 
     }
 
     protected void  initClientHandler(ChannelPipeline p){
-        p.addLast(new DefaultClientHandler());
+        // TODO use separate thread threads ? new LocalEventLoopGroup(),
+        // but just because too slow the server is.
+        // http://www.infoq.com/cn/articles/java-threadPool
+        // 依赖数据库连接池的任务，因为线程提交SQL后需要等待数据库返回结果，如果等待的时间越长CPU空闲时间就越长，那么线程数应该设置越大，这样才能更好的利用CPU。
+        // 建议使用有界队列，有界队列能增加系统的稳定性和预警能力，可以根据需要设大一点，比如几千。
+        p.addLast( new DefaultClientHandler());
     }
 }

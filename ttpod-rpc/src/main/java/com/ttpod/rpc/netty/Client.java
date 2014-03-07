@@ -28,8 +28,12 @@ public class Client implements CloseableChannelFactory {
     final Bootstrap b;
     final SocketAddress socketAddress;
     final ChannelGroup clientGroup;
+
     public Client(SocketAddress socketAddress, boolean NIO, ChannelHandler channelHandler){
         this.socketAddress = socketAddress;
+
+        //  java Thread Pool Choose. http://www.infoq.com/cn/articles/java-threadPool
+
         this.workerGroup = NIO ? new NioEventLoopGroup() : new OioEventLoopGroup();
         b = new Bootstrap(); // (1)
         b.group(workerGroup); // (2)
