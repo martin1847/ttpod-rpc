@@ -17,6 +17,8 @@ public class DefaultServerInitializer extends ChannelInitializer<SocketChannel> 
 //    final ChannelHandler frameEncoder = new ProtobufVarint32LengthFieldPrepender();
     final ChannelHandler frameEncoder = new LengthFieldPrepender(4);
     final ChannelHandler responseEncoder = new ResponseEncoder();
+
+    // TODO USE  LocalEventLoop ?
     final EventLoopGroup serverGroup = new NioEventLoopGroup(
 //                0, Executors.newCachedThreadPool()
     );

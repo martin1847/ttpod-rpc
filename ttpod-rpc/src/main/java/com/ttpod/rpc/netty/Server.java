@@ -4,10 +4,13 @@ import com.ttpod.rpc.pool.GroupManager;
 import com.ttpod.rpc.util.IpAddress;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Locale;
 
 /**
  * date: 14-1-7 下午4:20
@@ -16,12 +19,16 @@ import org.slf4j.LoggerFactory;
  */
 public class Server {
 
+
+    static final boolean LINUX = System.getProperty("os.name").toLowerCase(Locale.UK).trim().startsWith("linux");
+
     static final Logger logger = LoggerFactory.getLogger(Server.class);
 
     int port;
 
-    EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)
-    EventLoopGroup workerGroup = new NioEventLoopGroup();
+    //http://netty.io/news/2014/02/25/4-0-17-Final.html
+    EventLoopGroup bossGroup = LINUX ? new EpollEventLoopGroup() :  new NioEventLoopGroup(); // (1)
+    EventLoopGroup workerGroup = new NioEventLoopGroup(); // TODO USE  LocalEventLoop ?
     Channel channel;
     ChannelHandler channelHandler;
     GroupManager groupManager;
@@ -43,6 +50,7 @@ public class Server {
 
 
     public void start(){
+
 
         try {
             ServerBootstrap b = new ServerBootstrap(); // (2)

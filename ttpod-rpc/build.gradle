@@ -14,7 +14,7 @@ configurations {
 dependencies {
 
 //    optional 'io.netty:netty-all:5.0.0.Alpha1'//4.0.13.Final'
-    compile 'io.netty:netty-all:4.0.15.Final'//4.0.13.Final'
+    compile 'io.netty:netty-all:4.0.17.Final'//4.0.13.Final'
 
     compile 'org.slf4j:slf4j-api:1.7.5'
 //    compile 'commons-lang:commons-lang:2.6'
