@@ -27,7 +27,7 @@ public class Server {
     int port;
 
     //http://netty.io/news/2014/02/25/4-0-17-Final.html
-    EventLoopGroup bossGroup = LINUX ? new EpollEventLoopGroup() :  new NioEventLoopGroup(); // (1)
+    EventLoopGroup bossGroup = new NioEventLoopGroup();//LINUX ? new EpollEventLoopGroup() :  new NioEventLoopGroup(); // (1)
     EventLoopGroup workerGroup = new NioEventLoopGroup(); // TODO USE  LocalEventLoop ?
     Channel channel;
     ChannelHandler channelHandler;
