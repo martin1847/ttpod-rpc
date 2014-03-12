@@ -43,17 +43,13 @@ public class Client implements CloseableChannelFactory {
         this.clientGroup = new DefaultChannelGroup("clientGroup",GlobalEventExecutor.INSTANCE);
     }
 
-    public Channel connect(){
 
+    @Override
+    public Channel newChannel() {//make a new connection
         Channel channel = b.connect(socketAddress).syncUninterruptibly().channel();
         clientGroup.add(channel);
         // Start the client.
         return channel; // (5)
-    }
-
-    @Override
-    public Channel newChannel() {
-        return connect();
     }
 
     @Override
