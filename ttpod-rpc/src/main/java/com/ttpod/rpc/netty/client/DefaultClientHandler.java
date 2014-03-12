@@ -119,7 +119,7 @@ public class DefaultClientHandler extends SimpleChannelInboundHandler<ResponseBe
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         if(null!=channelPool){
             channelPool.remove(this);
-            logger.info("channelInactive . remove self from pool .");
+            logger.info("channelInactive,disconnect with {}. remove self from pool .",ctx.channel().remoteAddress());
         }
         super.channelInactive(ctx);
     }
