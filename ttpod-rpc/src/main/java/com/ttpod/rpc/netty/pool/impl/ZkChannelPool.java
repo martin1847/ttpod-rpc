@@ -40,7 +40,9 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
     Map<String,CloseableChannelFactory> connPool = new ConcurrentHashMap<>();
 
     public ZkChannelPool(String zkAddress,String groupName){
-        this(zkAddress,groupName,2);
+        this(zkAddress,groupName,
+                Math.max(4, Runtime.getRuntime().availableProcessors() - 2)
+        );
     }
 
     public ZkChannelPool(String zkAddress,String groupName, int clientsPerServer) {
@@ -111,14 +113,14 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
     static final boolean USE_NIO = ! Boolean.getBoolean("Client.BIO");
     void setUpClient(List<String> ipPorts){
 
-        Set<String> clsoed =  connPool.keySet();
-        clsoed.removeAll(ipPorts);
+        Set<String> closed =  connPool.keySet();
+        closed.removeAll(ipPorts);
 
-        for(String needClose : clsoed){
+        for(String needClose : closed){
             connPool.remove(needClose).shutdown();
         }
 
-        ipPorts.removeAll(clsoed);
+        ipPorts.removeAll(closed);
 
         for (String addr : ipPorts){
             String[] ip_port = addr.trim().split(":");
@@ -130,10 +132,10 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
 
             CloseableChannelFactory fac = new Client(new InetSocketAddress(ip,port),USE_NIO,new DefaultClientInitializer());
             connPool.put(addr,fac);
-            logger.info("Success Connect To  : {}" , addr);
             for(int i = clientsPerServer;i>0;i--){
                 handlers.add(fetchHandler(fac.newChannel()));
             }
+            logger.info("Success Connect To  : {} ,Establish {} Connections" , addr , clientsPerServer);
 
         }
     }
