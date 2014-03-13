@@ -1,6 +1,6 @@
 package com.ttpod.search.bean;
 
-public class MvBean extends StringIntegerOnly {
+public class VideoBean extends StringIntOnly {
 
 	/**
 	 * 
@@ -66,7 +66,7 @@ public class MvBean extends StringIntegerOnly {
 
     @Override
     public String toString() {
-        return "MvBean{" +
+        return "VideoBean{" +
                 "_id=" + _id +
                 ", pick_count=" + pick_count +
                 ", song_id=" + song_id +
