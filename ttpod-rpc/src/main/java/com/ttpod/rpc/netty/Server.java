@@ -81,14 +81,14 @@ public class Server {
     }
 
     private static int threadInitNumber;
-    
+
     public void startInNewThread(){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Server.this.start();
             }
-        },"Server.startInNewThread-" + threadInitNumber++);
+        },"Server.startInNewThread-" + threadInitNumber++).start();
         logger.info("Server Started in New Thread .");
     }
     public void shutdown(){
