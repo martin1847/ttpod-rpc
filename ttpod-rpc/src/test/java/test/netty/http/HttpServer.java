@@ -2,16 +2,11 @@ package test.netty.http;
 
 import com.ttpod.rpc.RequestBean;
 import com.ttpod.rpc.ResponseBean;
-import com.ttpod.rpc.netty.Pojo;
+import com.ttpod.search.bean.Pojo;
 import com.ttpod.rpc.netty.Server;
-import com.ttpod.rpc.netty.pool.impl.DefaultGroupManager;
-import com.ttpod.rpc.netty.server.DefaultServerHandler;
-import com.ttpod.rpc.netty.server.DefaultServerInitializer;
 import com.ttpod.rpc.netty.telnet.SimpleHttpServerInitializer;
 import com.ttpod.rpc.server.AbstractServerProcessor;
 import com.ttpod.rpc.server.ServerProcessor;
-import io.netty.channel.ChannelHandler;
-import io.netty.util.Version;
 
 import java.util.Arrays;
 import java.util.HashMap;

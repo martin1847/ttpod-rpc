@@ -3,7 +3,7 @@ package test.netty.protostuff.main;
 import com.ttpod.rpc.netty.Client;
 import com.ttpod.rpc.netty.codec.RequestDecoder;
 import com.ttpod.rpc.netty.codec.RequestEncoder;
-import com.ttpod.rpc.netty.Pojo;
+import com.ttpod.search.bean.Pojo;
 import test.netty.protostuff.codec.ProtostuffRuntimeDecoder;
 import test.netty.protostuff.codec.ProtostuffRuntimeEncoder;
 import io.netty.channel.*;

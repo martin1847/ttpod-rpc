@@ -1,4 +1,4 @@
-package com.ttpod.rpc.netty;
+package com.ttpod.search.bean;
 
 
 /**

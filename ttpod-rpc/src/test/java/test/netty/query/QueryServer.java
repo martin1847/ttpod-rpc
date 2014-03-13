@@ -1,6 +1,6 @@
 package test.netty.query;
 
-import com.ttpod.rpc.netty.Pojo;
+import com.ttpod.search.bean.Pojo;
 import com.ttpod.rpc.netty.Server;
 import com.ttpod.rpc.RequestBean;
 import com.ttpod.rpc.ResponseBean;

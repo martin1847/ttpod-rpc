@@ -3,7 +3,7 @@ package test.netty.protostuff.codec;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
-import com.ttpod.rpc.netty.Pojo;
+import com.ttpod.search.bean.Pojo;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;

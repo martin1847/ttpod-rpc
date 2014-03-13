@@ -24,7 +24,7 @@ public class RealSearch {
 
     public static void main(String[] args) throws Exception {
         CloseableChannelFactory client = new Client(
-                new InetSocketAddress("192.168.8.12", 6000), new DefaultClientInitializer());
+                new InetSocketAddress("127.0.0.1", 6666), new DefaultClientInitializer());
         // Read commands from the stdin.
         final ClientHandler handler = client.newChannel().pipeline().get(DefaultClientHandler.class);
         System.out.println("Pls Input a  word ..");
@@ -32,7 +32,7 @@ public class RealSearch {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         for (; ; ) {
             String line = in.readLine();
-            RequestBean req = new RequestBean((byte) 0, (short) 1, (short) 50, line);
+            RequestBean req = new RequestBean((byte) 1, (short) 1, (short) 10, line);
             ResponseBean res = handler.rpc(req);
             System.out.println(line + "  ->  rpc["+ InnerBindUtil.id(req) +"] -> " +res );
             if ("bye".equals(line)) {
