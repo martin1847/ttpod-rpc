@@ -14,9 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -41,7 +39,7 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
 
     public ZkChannelPool(String zkAddress,String groupName){
         this(zkAddress,groupName,
-                Math.max(4, Runtime.getRuntime().availableProcessors() - 2)
+                Math.max(2, Runtime.getRuntime().availableProcessors() / 2)
         );
     }
 
@@ -127,14 +125,21 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
             String ip = ip_port[0];
             int port = Integer.parseInt(ip_port[1]);
 
-            //TODO server weight
-//            zooKeeper.getData(groupName+"/"+addr,false, null);
+
 
             CloseableChannelFactory fac = new Client(new InetSocketAddress(ip,port),USE_NIO,new DefaultClientInitializer());
             connPool.put(addr,fac);
+
+            //TODO server weight
+            //            zooKeeper.getData(groupName+"/"+addr,false, null);
+            List<ClientHandler> newClients = new ArrayList<>(clientsPerServer);
+
             for(int i = clientsPerServer;i>0;i--){
-                handlers.add(fetchHandler(fac.newChannel()));
+                newClients.add(fetchHandler(fac.newChannel()));
             }
+            Collections.shuffle(newClients);
+
+            handlers.addAll(newClients);
             logger.info("Success Connect To  : {} ,Establish {} Connections" , addr , clientsPerServer);
 
         }
