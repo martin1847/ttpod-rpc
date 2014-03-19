@@ -32,7 +32,7 @@ public class QueryClient {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         for (; ; ) {
             String line = in.readLine();
-            RequestBean<String> req = new RequestBean<>((byte) 1, (short) 1, (short) 50, line);
+            RequestBean<String> req = new RequestBean<>((byte) 0, (short) 1, (short) 50, line);
             ResponseBean res = handler.rpc(req);
             System.out.println(line + "  ->  rpc["+ InnerBindUtil.id(req) +"] -> " +res );
             if ("bye".equals(line)) {

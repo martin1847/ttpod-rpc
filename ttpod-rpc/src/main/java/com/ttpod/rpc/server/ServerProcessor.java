@@ -28,15 +28,15 @@ public interface ServerProcessor<ReqType,ResType> {
 
         private List<ServerProcessor> processors = new ArrayList<>();
         {
-            processors.add(new ServerProcessor() {
+            processors.add(new ServerProcessor<Object,List<String>>() {
                 @Override
-                public ResponseBean handle(RequestBean req) throws Exception {
-                    ResponseBean res = new ResponseBean();
-                    List<String> descs = new ArrayList<>(processors.size());
+                public ResponseBean<List<String>> handle(RequestBean<Object> req) throws Exception {
+                    ResponseBean<List<String>> res = new ResponseBean<>();
+                    List<String> docs = new ArrayList<>(processors.size());
                     for(ServerProcessor sp : processors){
-                        descs.add(sp.description());
+                        docs.add(sp.description());
                     }
-                    res.setData(descs);
+                    res.setData(docs);
                     return res;
                 }
 

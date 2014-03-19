@@ -1,5 +1,8 @@
 package com.ttpod.rpc.server;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
 /**
  * date: 14-2-17 下午2:49
  *
@@ -14,6 +17,22 @@ public abstract class AbstractServerProcessor<ReqType,ResType> implements Server
 
     @Override
     public String description() {
-        return getClass().getName();
+        Class clz =  getClass();
+        String tmp = clz.getSimpleName();
+//        TypeVariable[] typeParameters =  clz.getTypeParameters();
+
+        Type[]  typeParameters = ((ParameterizedType)clz.getGenericSuperclass()).getActualTypeArguments();
+        if( typeParameters.length == 0 ){
+            typeParameters = ((ParameterizedType)clz.getSuperclass().getGenericSuperclass()).getActualTypeArguments();
+        }
+
+        if(typeParameters.length>0){
+            tmp += "<" + typeParameters[0].toString().replace("java.lang.","");
+        }
+        if(typeParameters.length>1){
+            tmp += "," + typeParameters[1].toString().replace("java.lang.", "")+">";
+        }
+
+        return tmp;
     }
 }

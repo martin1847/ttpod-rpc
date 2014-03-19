@@ -20,7 +20,7 @@ import java.util.List;
  * @author: yangyang.cong@ttpod.com
  */
 public class QueryServer {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
 
 
         System.out.println(
@@ -42,8 +42,12 @@ public class QueryServer {
                 }
             }
         );
+        ServerProcessor[]  processors =  regCenter.toArray();
+        final DefaultServerHandler serverHandler = new DefaultServerHandler(processors);
 
-        final DefaultServerHandler serverHandler = new DefaultServerHandler(regCenter.toArray());
+        System.out.println(
+                processors[0].handle(new RequestBean())
+        );
 
         new Server(new DefaultServerInitializer(serverHandler),6666,new DefaultGroupManager(
               "192.168.8.12:2181","com.ttpod.search"
