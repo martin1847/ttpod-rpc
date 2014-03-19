@@ -15,7 +15,7 @@ public interface ClientHandler {
     /**
      * async call.
      */
-    void rpc(RequestBean req, ResponseObserver observer);
+    <Data>void rpc(RequestBean req, ResponseObserver<Data> observer);
 
     /**
      * sync call.
