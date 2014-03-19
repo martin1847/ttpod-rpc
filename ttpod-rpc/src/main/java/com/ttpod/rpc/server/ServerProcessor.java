@@ -13,9 +13,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author: yangyang.cong@ttpod.com
  */
-public interface ServerProcessor {
+public interface ServerProcessor<ReqType,ResType> {
 
-    ResponseBean handle(RequestBean req) throws Exception;
+    ResponseBean<ResType> handle(RequestBean<ReqType> req) throws Exception;
 
     String description();
 

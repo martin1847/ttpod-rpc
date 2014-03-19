@@ -5,7 +5,7 @@ package com.ttpod.rpc.server;
  *
  * @author: yangyang.cong@ttpod.com
  */
-public abstract class AbstractServerProcessor implements ServerProcessor {
+public abstract class AbstractServerProcessor<ReqType,ResType> implements ServerProcessor<ReqType,ResType> {
 
     @Override
     public String toString() {

@@ -84,4 +84,8 @@ public class DefaultServerHandler extends SimpleChannelInboundHandler<RequestBea
         ctx.close();
         super.channelInactive(ctx);
     }
+    public DefaultServerHandler(){}
+    public DefaultServerHandler(ServerProcessor[] processors) {
+        this.processors = processors;
+    }
 }

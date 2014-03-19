@@ -20,11 +20,11 @@ public interface ClientHandler {
     /**
      * sync call.
      */
-    ResponseBean rpc(RequestBean req);
+    <Data>ResponseBean<Data> rpc(RequestBean req);
 
     /**
      * sync call.
      */
-    ResponseBean rpc(RequestBean req,int timeOutMills) throws TimeoutException;
+    <Data>ResponseBean<Data> rpc(RequestBean req,int timeOutMills) throws TimeoutException;
 
 }

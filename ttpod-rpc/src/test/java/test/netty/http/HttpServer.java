@@ -10,6 +10,7 @@ import com.ttpod.rpc.server.ServerProcessor;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,9 +23,9 @@ public class HttpServer {
 
 
         Map<String, ServerProcessor> proc = new HashMap<>();
-        proc.put("test",new AbstractServerProcessor() {
-            public ResponseBean handle(RequestBean req) throws Exception {
-                ResponseBean data = new ResponseBean();
+        proc.put("test",new AbstractServerProcessor<String,List>() {
+            public ResponseBean<List> handle(RequestBean<String> req) throws Exception {
+                ResponseBean<List> data = new ResponseBean<>();
                 data.setCode(1);
                 data.setPages(10);
                 data.setRows(2000);

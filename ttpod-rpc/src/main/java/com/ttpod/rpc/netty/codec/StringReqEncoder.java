@@ -14,14 +14,13 @@ import io.netty.util.CharsetUtil;
  * @author: yangyang.cong@ttpod.com
  */
 @ChannelHandler.Sharable
-public class RequestEncoder extends MessageToByteEncoder<RequestBean> {
-
+public class StringReqEncoder extends MessageToByteEncoder<RequestBean<String>> {
 
     static final int BYTE_FIELDS = 1*2 + 3 * 1;// _id + 3 byte
     public static final short MAGIC  = 0XCF;
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, RequestBean req, ByteBuf out) throws Exception {
+    protected void encode(ChannelHandlerContext ctx, RequestBean<String> req, ByteBuf out) throws Exception {
 
 //        System.out.println("[QueryReqEncoder call]   ");
 //        byte[] q = ;

@@ -1,4 +1,4 @@
-package test;
+package test.netty.query;
 
 import com.ttpod.rpc.InnerBindUtil;
 import com.ttpod.rpc.RequestBean;
@@ -13,33 +13,32 @@ import com.ttpod.rpc.netty.pool.CloseableChannelFactory;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
- * TODO Comment here.
- * date: 14-2-14 下午7:02
+ * date: 14-1-28 下午2:16
  *
  * @author: yangyang.cong@ttpod.com
  */
-public class RealSearch {
-
+public class MulitThreadTest {
     public static void main(String[] args) throws Exception {
         CloseableChannelFactory client = new Client(
                 new InetSocketAddress("127.0.0.1", 6666), new DefaultClientInitializer());
         // Read commands from the stdin.
         final ClientHandler handler = client.newChannel().pipeline().get(DefaultClientHandler.class);
-        System.out.println("Pls Input a  word ..");
-//      final ChannelGroup channels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        for (; ; ) {
-            String line = in.readLine();
-            RequestBean<String> req = new RequestBean<>((byte) 1, (short) 1, (short) 10, line);
-            ResponseBean res = handler.rpc(req);
-            System.out.println(line + "  ->  rpc["+ InnerBindUtil.id(req) +"] -> " +res );
-            if ("bye".equals(line)) {
-                client.shutdown();
-                break;
+        final int THREADS = OutstandingContainer.UNSIGN_SHORT_OVER_FLOW;
+        ExecutorService exe = Executors.newFixedThreadPool(Math.min(1024,THREADS));
+        exe.execute(new Benchmark("assertThreadSafe",handler,exe,THREADS){
+            protected void rpcCall(RequestBean<String> req) {
+                ResponseBean msg =  handler.rpc(req);
+                if (!msg.toString().contains(req.getData())) {
+                    System.err.println(req.getData()+ "\t" + InnerBindUtil.id(req) + "\t" + msg);
+                }
             }
-        }
+        });
+        Thread.currentThread().join();
+        exe.shutdown();
 
     }
 }

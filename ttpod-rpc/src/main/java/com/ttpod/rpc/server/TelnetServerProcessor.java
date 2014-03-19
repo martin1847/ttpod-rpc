@@ -10,15 +10,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author: yangyang.cong@ttpod.com
  */
-public abstract class TelnetServerProcessor extends AbstractServerProcessor {
+public abstract class TelnetServerProcessor extends AbstractServerProcessor<String,String> {
 
     static final Logger logger = LoggerFactory.getLogger(TelnetServerProcessor.class);
 
     @Override
-    public ResponseBean handle(RequestBean req) throws Exception {
+    public ResponseBean<String> handle(RequestBean<String> req) throws Exception {
         try{
             String data = handle(req.getData());
-            ResponseBean res = ResponseBean.code1();
+            ResponseBean<String> res = ResponseBean.code1();
             res.setData(data);
             return res;
         }catch (Throwable e){//For RPC must Notify Client .

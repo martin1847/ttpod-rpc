@@ -73,18 +73,18 @@ public class DefaultClientHandler extends SimpleChannelInboundHandler<ResponseBe
     }
 
     @Override
-    public ResponseBean rpc(RequestBean req) {
-        ResponseObserver.Blocking done = new ResponseObserver.Blocking();
+    public <Data>ResponseBean<Data> rpc(RequestBean req) {
+        ResponseObserver.Blocking<Data> done = new ResponseObserver.Blocking<>();
         rpc(req,done);
         return done.get();
     }
 
     @Override
-    public ResponseBean rpc(RequestBean req, int timeOutMills) throws TimeoutException{
-        ResponseObserver.Future future = new ResponseObserver.Future();
+    public <Data>ResponseBean<Data> rpc(RequestBean req, int timeOutMills) throws TimeoutException{
+        ResponseObserver.Future<Data> future = new ResponseObserver.Future<>();
         rpc(req,future);
         try {
-            return future.get(timeOutMills, TimeUnit.MILLISECONDS);
+            return (ResponseBean<Data>)future.get(timeOutMills, TimeUnit.MILLISECONDS);
         } catch (InterruptedException | ExecutionException e) {
             logger.error(" rpc future Error -> ",e);
             throw new RuntimeException("future Got Error . ",e);

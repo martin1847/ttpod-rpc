@@ -47,7 +47,7 @@ class SimpleHttpServerHandler extends SimpleChannelInboundHandler<FullHttpReques
         String path = query.path().substring(1);
         ServerProcessor proc = processors.get(path);
         if (null != proc) {
-            RequestBean req = new RequestBean();
+            RequestBean<String> req = new RequestBean<>();
             try{
                 Map<String, List<String>> param = query.parameters();
                 req.setData(trim(param, "data"));

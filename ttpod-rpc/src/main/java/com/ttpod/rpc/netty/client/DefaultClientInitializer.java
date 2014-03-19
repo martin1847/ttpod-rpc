@@ -1,6 +1,6 @@
 package com.ttpod.rpc.netty.client;
 
-import com.ttpod.rpc.netty.codec.RequestEncoder;
+import com.ttpod.rpc.netty.codec.StringReqEncoder;
 import com.ttpod.rpc.netty.codec.ResponseDecoder;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
@@ -24,7 +24,7 @@ public class DefaultClientInitializer extends ChannelInitializer<SocketChannel> 
 
     static final Logger logger = LoggerFactory.getLogger(DefaultClientInitializer.class);
 
-    final ChannelHandler requestEncoder = new RequestEncoder();
+    final ChannelHandler requestEncoder = new StringReqEncoder();
     final ChannelHandler responseDecoder = new ResponseDecoder();
 
     public void initChannel(SocketChannel ch) throws Exception {

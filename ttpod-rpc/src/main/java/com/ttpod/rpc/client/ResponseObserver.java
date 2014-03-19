@@ -2,6 +2,7 @@ package com.ttpod.rpc.client;
 
 import com.ttpod.rpc.ResponseBean;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
@@ -10,20 +11,20 @@ import java.util.concurrent.FutureTask;
  *
  * @author: yangyang.cong@ttpod.com
  */
-public interface ResponseObserver {
+public interface ResponseObserver<Data> {
 
-    void onSuccess(ResponseBean response);
+    void onSuccess(ResponseBean<Data> response);
 
-    class Blocking implements ResponseObserver{
-        public volatile ResponseBean response;
-        public void onSuccess(ResponseBean response) {
+    class Blocking<Data> implements ResponseObserver<Data>{
+        public volatile ResponseBean<Data> response;
+        public void onSuccess(ResponseBean<Data> response) {
             this.response = response;
             synchronized (this) {
                 notify();
             }
         }
 
-        public ResponseBean get(){
+        public ResponseBean<Data> get(){
             synchronized (this) {
                 while (null == response) {
                     try {
@@ -37,7 +38,7 @@ public interface ResponseObserver {
 
     }
 
-    class Future extends FutureTask<ResponseBean> implements ResponseObserver {
+    class Future<Data> extends FutureTask<ResponseBean> implements ResponseObserver<Data> {
         private static final Callable<ResponseBean> innerNotUse = new Callable<ResponseBean>() {
             public ResponseBean call() throws Exception {
                 return null;
@@ -46,7 +47,7 @@ public interface ResponseObserver {
         public Future() {
             super(innerNotUse);
         }
-        public void onSuccess(ResponseBean response) {
+        public void onSuccess(ResponseBean<Data> response) {
             set(response);
         }
     }

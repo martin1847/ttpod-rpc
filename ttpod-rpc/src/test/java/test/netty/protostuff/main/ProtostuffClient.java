@@ -1,8 +1,8 @@
 package test.netty.protostuff.main;
 
 import com.ttpod.rpc.netty.Client;
-import com.ttpod.rpc.netty.codec.RequestDecoder;
-import com.ttpod.rpc.netty.codec.RequestEncoder;
+import com.ttpod.rpc.netty.codec.StringReqDecoder;
+import com.ttpod.rpc.netty.codec.StringReqEncoder;
 import com.ttpod.search.bean.Pojo;
 import test.netty.protostuff.codec.ProtostuffRuntimeDecoder;
 import test.netty.protostuff.codec.ProtostuffRuntimeEncoder;
@@ -20,8 +20,8 @@ import java.net.InetSocketAddress;
  */
 public class ProtostuffClient {
     public static void main(String[] args) throws Exception{
-        final RequestDecoder decoder =  new RequestDecoder();
-        final RequestEncoder encoder =  new RequestEncoder();
+        final StringReqDecoder decoder =  new StringReqDecoder();
+        final StringReqEncoder encoder =  new StringReqEncoder();
 
 //        byte flag = 1;
 ////                                ctx.flush();

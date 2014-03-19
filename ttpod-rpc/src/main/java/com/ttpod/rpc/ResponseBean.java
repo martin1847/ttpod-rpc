@@ -5,7 +5,7 @@ package com.ttpod.rpc;
  *
  * @author: yangyang.cong@ttpod.com
  */
-public class ResponseBean {
+public class ResponseBean<Data> {
 
     short _req_id;
 
@@ -13,7 +13,7 @@ public class ResponseBean {
     int rows;
     int pages;
 
-    Object data;
+    Data data;
 
     public ResponseBean(){}
 
@@ -41,11 +41,11 @@ public class ResponseBean {
         this.pages = pages;
     }
 
-    public Object getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(Data data) {
         this.data = data;
     }
 
@@ -78,14 +78,14 @@ public class ResponseBean {
     }
 
 
-    public static ResponseBean error(){
-        return new ResponseBean(ERROR);
+    public static <Data>ResponseBean<Data> error(){
+        return new ResponseBean<>(ERROR);
     }
 
-    public static ResponseBean code0(){
-        return new ResponseBean(0);
+    public static <Data>ResponseBean<Data> code0(){
+        return new ResponseBean<>(0);
     }
-    public static ResponseBean code1(){
-        return new ResponseBean(1);
+    public static <Data> ResponseBean<Data> code1(){
+        return new ResponseBean<>(1);
     }
 }

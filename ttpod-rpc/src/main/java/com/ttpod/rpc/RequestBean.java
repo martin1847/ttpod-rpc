@@ -5,7 +5,7 @@ package com.ttpod.rpc;
  *
  * @author: yangyang.cong@ttpod.com
  */
-public class RequestBean {
+public class RequestBean<Data> {
 
 
 
@@ -23,16 +23,16 @@ public class RequestBean {
     short page  = 1;// unsigned byte. MAX VALUE =0xff
     short size  = DEFAULT_SIZE;// unsigned byte.
     short _req_id;
-    String data ;
+    Data data ;
 
     public RequestBean(){
     }
 
-    public RequestBean(Enum service, short page, short size, String data) {
+    public RequestBean(Enum service, short page, short size, Data data) {
         this((byte) service.ordinal(),page,size,data);
     }
 
-    public RequestBean(byte service, short page, short size, String data) {
+    public RequestBean(byte service, short page, short size, Data data) {
         this();
         this.service = service;
         this.page = page;
@@ -70,11 +70,11 @@ public class RequestBean {
         this.size = (short)size;
     }
 
-    public String getData() {
+    public Data getData() {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(Data data) {
         this.data = data;
     }
 
@@ -98,8 +98,8 @@ public class RequestBean {
     }
 
 
-    public static RequestBean  req(Enum service){
-        RequestBean req = new RequestBean();
+    public static <Data>RequestBean<Data>  req(Enum service){
+        RequestBean<Data> req = new RequestBean<>();
         req.setService((byte)service.ordinal());
         return req;
     }

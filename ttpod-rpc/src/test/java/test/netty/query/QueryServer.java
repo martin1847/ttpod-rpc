@@ -1,6 +1,5 @@
 package test.netty.query;
 
-import com.ttpod.search.bean.Pojo;
 import com.ttpod.rpc.netty.Server;
 import com.ttpod.rpc.RequestBean;
 import com.ttpod.rpc.ResponseBean;
@@ -9,9 +8,11 @@ import com.ttpod.rpc.netty.server.DefaultServerHandler;
 import com.ttpod.rpc.netty.server.DefaultServerInitializer;
 import com.ttpod.rpc.server.AbstractServerProcessor;
 import com.ttpod.rpc.server.ServerProcessor;
+import com.ttpod.search.bean.Pojo;
 import io.netty.util.Version;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * date: 14-1-28 下午1:11
@@ -26,13 +27,13 @@ public class QueryServer {
                 Version.identify()
         );
 
-        final DefaultServerHandler serverHandler = new DefaultServerHandler();
+
         ServerProcessor.RegCenter regCenter = ServerProcessor.RegCenter.DEFAULT;
 
         regCenter.regProcessor(
-            new AbstractServerProcessor() {
-                public ResponseBean handle(RequestBean req) throws Exception {
-                    ResponseBean data = new ResponseBean();
+            new AbstractServerProcessor<String,List>() {
+                public ResponseBean<List> handle(RequestBean<String> req) throws Exception {
+                    ResponseBean<List> data = new ResponseBean<>();
                     data.setCode(1);
                     data.setPages(10);
                     data.setRows(2000);
@@ -41,6 +42,9 @@ public class QueryServer {
                 }
             }
         );
+
+        final DefaultServerHandler serverHandler = new DefaultServerHandler(regCenter.toArray());
+
         new Server(new DefaultServerInitializer(serverHandler),6666,new DefaultGroupManager(
               "192.168.8.12:2181","com.ttpod.search"
         )).start();

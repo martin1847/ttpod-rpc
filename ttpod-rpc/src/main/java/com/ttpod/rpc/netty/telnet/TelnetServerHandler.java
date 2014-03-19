@@ -63,7 +63,7 @@ class TelnetServerHandler extends SimpleChannelInboundHandler<String> {
         ServerProcessor proc = processors.get(key);
         boolean close = false;
         if(null != proc){
-            RequestBean req = new RequestBean();
+            RequestBean<String> req = new RequestBean<>();
             req.setData(args);
             response  =String.valueOf(proc.handle(req).getData()) +"\r\n";
         } else if ("bye".equals(request.toLowerCase())) {

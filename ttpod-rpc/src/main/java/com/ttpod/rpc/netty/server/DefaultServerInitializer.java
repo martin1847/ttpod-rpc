@@ -1,6 +1,6 @@
 package com.ttpod.rpc.netty.server;
 
-import com.ttpod.rpc.netty.codec.RequestDecoder;
+import com.ttpod.rpc.netty.codec.StringReqDecoder;
 import com.ttpod.rpc.netty.codec.ResponseEncoder;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -33,7 +33,7 @@ public class DefaultServerInitializer extends ChannelInitializer<SocketChannel> 
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline p = ch.pipeline();
 
-        p.addLast("decoder", new RequestDecoder());
+        p.addLast("decoder", new StringReqDecoder());
 
         p.addLast("frameEncoder",frameEncoder );
         p.addLast("responseEncoder", responseEncoder);
