@@ -1,13 +1,15 @@
 package com.ttpod.rpc.netty.client;
 
-import com.ttpod.rpc.netty.codec.StringReqEncoder;
-import com.ttpod.rpc.netty.codec.ResponseDecoder;
+import com.ttpod.rpc.netty.codec.ResponseDec;
+import com.ttpod.rpc.netty.codec.ResponseEnc;
+import com.ttpod.rpc.netty.codec.StringReqEnc;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.local.LocalEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.util.concurrent.EventExecutorGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,15 +26,24 @@ public class DefaultClientInitializer extends ChannelInitializer<SocketChannel> 
 
     static final Logger logger = LoggerFactory.getLogger(DefaultClientInitializer.class);
 
-    final ChannelHandler requestEncoder = new StringReqEncoder();
-    final ChannelHandler responseDecoder = new ResponseDecoder();
+    final ChannelHandler stringReqEnc = new StringReqEnc();
+    final ChannelHandler reqEnc = new ResponseEnc();
+
+    final ChannelHandler responseDec = new ResponseDec();
+    final ChannelHandler frameEnc = new LengthFieldPrepender(4);
 
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline p = ch.pipeline();
 //        p.addLast("frameDecoder", new ProtobufVarint32FrameDecoder());
-        p.addLast("frameDecoder", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4,0,4));
-        p.addLast("responseDecoder", responseDecoder);
-        p.addLast("requestEncoder", requestEncoder);
+        p.addLast("frameDec", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4,0,4));
+        p.addLast("responseDec", responseDec);
+
+        if(StringReqEnc.disable){
+            p.addLast("frameEnc",frameEnc );
+            p.addLast("requestEnc", reqEnc);
+        }else{
+            p.addLast("stringReqEnc", stringReqEnc);
+        }
         initClientHandler(p);
     }
 

@@ -15,7 +15,7 @@ import java.util.List;
  * @author: yangyang.cong@ttpod.com
  */
 //@ChannelHandler.Sharable
-public class StringReqDecoder extends ByteToMessageDecoder {
+public class StringReqDec extends ByteToMessageDecoder {
     static final int MAGIC_BYTE  = 1;
     static final int LENGTH_BYTE  = 2;
     static final int HEADER_BYTE   = MAGIC_BYTE + LENGTH_BYTE ;
@@ -27,7 +27,7 @@ public class StringReqDecoder extends ByteToMessageDecoder {
         }
         in.markReaderIndex();
         int frameLength;
-        if (        in.readUnsignedByte() != StringReqEncoder.MAGIC
+        if (        in.readUnsignedByte() != StringReqEnc.MAGIC
               ||    (frameLength = in.readUnsignedShort() )> in.readableBytes()  // Wait until the whole data is available.
          ) {
             in.resetReaderIndex();

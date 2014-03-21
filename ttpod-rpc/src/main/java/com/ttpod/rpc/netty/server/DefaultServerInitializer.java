@@ -1,10 +1,11 @@
 package com.ttpod.rpc.netty.server;
 
-import com.ttpod.rpc.netty.codec.StringReqDecoder;
-import com.ttpod.rpc.netty.codec.ResponseEncoder;
+import com.ttpod.rpc.netty.codec.*;
 import io.netty.channel.*;
+import io.netty.channel.local.LocalEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 
 /**
@@ -15,29 +16,32 @@ import io.netty.handler.codec.LengthFieldPrepender;
 public class DefaultServerInitializer extends ChannelInitializer<SocketChannel> {
 
 //    final ChannelHandler frameEncoder = new ProtobufVarint32LengthFieldPrepender();
-    final ChannelHandler frameEncoder = new LengthFieldPrepender(4);
-    final ChannelHandler responseEncoder = new ResponseEncoder();
+    final ChannelHandler frameEnc = new LengthFieldPrepender(4);
 
-    // TODO USE  LocalEventLoop ?
-    final EventLoopGroup serverGroup = new NioEventLoopGroup(
-//                0, Executors.newCachedThreadPool()
-    );
+    final ChannelHandler requestDec = new RequestDec();
+    final ChannelHandler responseEnc = new ResponseEnc();
 
     final DefaultServerHandler serverHandler;
 
     public DefaultServerInitializer(DefaultServerHandler serverHandler) {
         this.serverHandler = serverHandler;
     }
+    final EventLoopGroup serverHandlerLoop = new LocalEventLoopGroup();
 
     @Override
     public void initChannel(SocketChannel ch) throws Exception {
         ChannelPipeline p = ch.pipeline();
 
-        p.addLast("decoder", new StringReqDecoder());
+        if(StringReqEnc.disable){
+            p.addLast("frameDec", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4,0,4));
+            p.addLast("requestDec", requestDec);
+        }else{
+            p.addLast("stringReqDec", new StringReqDec());
+        }
 
-        p.addLast("frameEncoder",frameEncoder );
-        p.addLast("responseEncoder", responseEncoder);
+        p.addLast("frameEnc",frameEnc );
+        p.addLast("responseEnc", responseEnc);
 
-        p.addLast(serverGroup, "serverHandler", serverHandler);
+        p.addLast(serverHandlerLoop, "serverHandler", serverHandler);
     }
 }

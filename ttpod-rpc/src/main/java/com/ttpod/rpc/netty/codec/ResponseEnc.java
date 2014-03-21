@@ -1,17 +1,8 @@
 package com.ttpod.rpc.netty.codec;
 
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtostuffIOUtil;
+import com.dyuproject.protostuff.Schema;
 import com.ttpod.rpc.ResponseBean;
 import io.netty.channel.ChannelHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageEncoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
-
-import static io.netty.buffer.Unpooled.wrappedBuffer;
 
 /**
  * date: 14-2-7 下午12:01
@@ -19,11 +10,7 @@ import static io.netty.buffer.Unpooled.wrappedBuffer;
  * @author: yangyang.cong@ttpod.com
  */
 @ChannelHandler.Sharable
-public class ResponseEncoder extends MessageToMessageEncoder<ResponseBean> {
-
-
-
-
+public final class ResponseEnc extends ProtostuffEncoder<ResponseBean> {
 
     /**
      *
@@ -48,24 +35,18 @@ public class ResponseEncoder extends MessageToMessageEncoder<ResponseBean> {
 
      // Then when your app needs a schema, use it.
      RuntimeSchema.getSchema(clazz, strategy);
-
      DEFAULT_JVM_OPTS="-DResponseEncoder.buffer=32768"
-
-
      */
 
-    static final int DEAULT_ENCODER_BUFFSIZE = Integer.getInteger("ResponseEncoder.buffer",1024);
-    static final Logger logger = LoggerFactory.getLogger(ResponseEncoder.class);
-    @Override
-    protected void encode(
-            ChannelHandlerContext ctx, ResponseBean msg, List<Object> out) throws Exception {
-//        ExplicitIdStrategy.Registry.
-        byte[] data = ProtostuffIOUtil.toByteArray(msg, ResponseDecoder.schema, LinkedBuffer.allocate(DEAULT_ENCODER_BUFFSIZE));
+    static final int DEAULT_ENCODER_BUFFSIZE = Integer.getInteger("RequestEnc.buffer",1024);
 
-        if( data.length > DEAULT_ENCODER_BUFFSIZE){
-            logger.info("encode QueryRes bytes: {}", data.length);
-        }
-//        schema.newMessage();
-        out.add(wrappedBuffer(data));
+    @Override
+    protected Schema<ResponseBean> cachedSchema() {
+        return ProtostuffDecoder.RESPONSE_SCHEMA;
+    }
+
+    @Override
+    protected int bufferSize() {
+        return DEAULT_ENCODER_BUFFSIZE;
     }
 }

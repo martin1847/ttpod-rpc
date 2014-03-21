@@ -14,7 +14,10 @@ import io.netty.util.CharsetUtil;
  * @author: yangyang.cong@ttpod.com
  */
 @ChannelHandler.Sharable
-public class StringReqEncoder extends MessageToByteEncoder<RequestBean<String>> {
+public class StringReqEnc extends MessageToByteEncoder<RequestBean<String>> {
+
+
+    public static final Boolean disable = Boolean.getBoolean("StringReqEnc.disable");
 
     static final int BYTE_FIELDS = 1*2 + 3 * 1;// _id + 3 byte
     public static final short MAGIC  = 0XCF;
