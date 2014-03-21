@@ -38,7 +38,7 @@ public final class ResponseEnc extends ProtostuffEncoder<ResponseBean> {
      DEFAULT_JVM_OPTS="-DResponseEncoder.buffer=32768"
      */
 
-    static final int DEAULT_ENCODER_BUFFSIZE = Integer.getInteger("RequestEnc.buffer",1024);
+    static final int BUFFER_SIZE = Integer.getInteger(ResponseEnc.class.getSimpleName()+ ".buffer",1024);
 
     @Override
     protected Schema<ResponseBean> cachedSchema() {
@@ -47,6 +47,6 @@ public final class ResponseEnc extends ProtostuffEncoder<ResponseBean> {
 
     @Override
     protected int bufferSize() {
-        return DEAULT_ENCODER_BUFFSIZE;
+        return BUFFER_SIZE;
     }
 }

@@ -12,7 +12,7 @@ import io.netty.channel.ChannelHandler;
 @ChannelHandler.Sharable
 public final class RequestEnc extends ProtostuffEncoder<RequestBean> {
 
-    static final int DEAULT_ENCODER_BUFFSIZE = Integer.getInteger("RequestEnc.buffer",1024);
+    static final int BUFFER_SIZE = Integer.getInteger(RequestEnc.class.getSimpleName() + ".buffer",1024);
 
     @Override
     protected Schema<RequestBean> cachedSchema() {
@@ -21,6 +21,6 @@ public final class RequestEnc extends ProtostuffEncoder<RequestBean> {
 
     @Override
     protected int bufferSize() {
-        return 0;
+        return BUFFER_SIZE;
     }
 }
