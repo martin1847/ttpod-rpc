@@ -54,7 +54,8 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
     ZooKeeper zooKeeper;
     GroupManager groupManager;
 
-    int tick;
+
+
     public void init(){
         zooKeeper = Zoo.connect(zkAddress);
         groupManager = new DefaultGroupManager(zooKeeper,groupName,new GroupMemberObserver() {
@@ -62,28 +63,13 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
                 setUpClient(currentNodes);
             }
         });
-        resetTickPeriod();
     }
 
-    void resetTickPeriod(){
-        new Thread(new Runnable() {
-            static final long ONE_HOUR = 3600 * 1000L;
-            public void run() {
-                while (true){
-                    try {
-                        Thread.sleep(ONE_HOUR);
-                    } catch (InterruptedException ignored) {
-                    }
-                    tick = 0;
-                }
-            }
-        },"ZkChannelPool.resetTickPeriod").start();
-    }
-
-
+    static final int AVOID_OVER_FLOW = 0xFFFF;
+    int tick; // use AtomicInteger ? not needed..
     @Override
-    public ClientHandler next() {// allow i to use twice.
-        return handlers.get( tick++ % handlers.size() );
+    public ClientHandler next() {// allow i to use twice. Although i not thread safe here,but Almost no effect.
+        return handlers.get(  ( ++tick & AVOID_OVER_FLOW )  % handlers.size() );
     }
 
     @Override
