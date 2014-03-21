@@ -97,4 +97,11 @@ public class Bean{
                 ", lang='" + lang + '\'' +
                 '}';
     }
+
+    public static void main(String[] args) {
+        int j = -2323;
+        int UNSIGN_SHORT_OVER_FLOW = 0xFFFF;
+        for(int i = 0;i<10;++i)
+        System.out.println(((i+j)&UNSIGN_SHORT_OVER_FLOW )%5);
+    }
 }
