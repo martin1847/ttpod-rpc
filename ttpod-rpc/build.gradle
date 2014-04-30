@@ -14,9 +14,9 @@ configurations {
 dependencies {
 
 //    optional 'io.netty:netty-all:5.0.0.Alpha1'//4.0.13.Final'
-    compile 'io.netty:netty-all:4.0.17.Final'//4.0.13.Final'
+    compile 'io.netty:netty-all:4.0.18.Final'//4.0.13.Final'
 
-    compile 'org.slf4j:slf4j-api:1.7.6'
+    compile 'org.slf4j:slf4j-api:1.7.7'
 //    compile 'commons-lang:commons-lang:2.6'
 
     //https://code.google.com/p/protostuff/wiki/ThingsYouNeedToKnow
@@ -28,7 +28,7 @@ dependencies {
 
     optional 'com.alibaba:fastjson:1.1.39'
 
-    optional('org.apache.zookeeper:zookeeper:3.4.5'){
+    optional('org.apache.zookeeper:zookeeper:3.4.6'){
         exclude module: 'slf4j-log4j12'
         exclude module: 'log4j'
         exclude module: 'jline'
