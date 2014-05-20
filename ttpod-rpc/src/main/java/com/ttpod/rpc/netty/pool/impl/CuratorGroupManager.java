@@ -30,13 +30,13 @@ public class CuratorGroupManager implements GroupManager {
     Map<String, byte[]> ephemeralCache = new ConcurrentHashMap<>();
 
 
-    public CuratorGroupManager(String groupName, String zkAddress) {
-        this(groupName, CuratorFrameworkFactory.newClient(zkAddress,
-                5000, 3000, new RetryUntilElapsed(3600 * 1000, 1500)));
+    public CuratorGroupManager(String zkAddress, String groupName) {
+        this(CuratorFrameworkFactory.newClient(zkAddress,
+                5000, 3000, new RetryUntilElapsed(3600 * 1000, 1500)),groupName);
     }
 
 
-    public CuratorGroupManager(String groupName,final CuratorFramework curator) {
+    public CuratorGroupManager(final CuratorFramework curator,String groupName) {
         this.groupName = Zoo.flipPath(groupName);
         this.curator = curator;
         if (curator.getState() == CuratorFrameworkState.LATENT) {
