@@ -4,12 +4,13 @@ import com.ttpod.rpc.pool.GroupManager;
 import com.ttpod.rpc.util.IpAddress;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
-import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 /**
@@ -80,7 +81,6 @@ public class Server {
         }
     }
 
-    private static int threadInitNumber;
 
     public void startInNewThread(){
         new Thread(new Runnable() {
@@ -88,7 +88,7 @@ public class Server {
             public void run() {
                 Server.this.start();
             }
-        },"Server.startInNewThread-" + threadInitNumber++).start();
+        },"Server.startInNewThread-" + new SimpleDateFormat("yyMMdd-HHmm").format(new Date())).start();
         logger.info("Server Started in New Thread .");
     }
     public void shutdown(){

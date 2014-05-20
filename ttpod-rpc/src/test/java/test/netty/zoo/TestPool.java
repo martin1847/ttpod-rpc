@@ -5,6 +5,8 @@ import com.ttpod.rpc.netty.pool.impl.ZkChannelPool;
 import com.ttpod.rpc.pool.GroupManager;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 /**
  * date: 2014/5/20 17:16
  *
@@ -26,12 +28,17 @@ public class TestPool {
     }
 
 
+    /**
+     * [root@ss ~]# iptables -A INPUT -s 192.168.4.74  -p tcp --dport 2181 -j DROP
+     * [root@ss ~]# iptables -F
+     *
+     * @throws InterruptedException
+     */
     @Test
     public void testGroup() throws InterruptedException {
 
-
         GroupManager group = new CuratorGroupManager("TEST",zooUrl);
-        group.join("CuratorGroupManager","".getBytes());
+        group.join("CuratorGroupManager",null);
 
         Thread.currentThread().join();
     }

@@ -57,7 +57,7 @@ public class CuratorGroupManager implements GroupManager {
     }
 
 
-    static final byte[] EMPTY_STR="".getBytes();
+    static final byte[] EMPTY_STR={};
     public String join(String memberName, byte[] data) {
         if(null == data){
             data = EMPTY_STR;
