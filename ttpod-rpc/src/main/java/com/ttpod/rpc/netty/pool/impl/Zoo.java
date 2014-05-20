@@ -16,6 +16,10 @@ public  abstract class Zoo {
 
 
     public static ZooKeeper connect(String zkAddress){
+       return connect(zkAddress,null);
+    }
+
+    public static ZooKeeper connect(String zkAddress, final Runnable timeOutHandler){
         try {
             final CountDownLatch connectedSignal = new CountDownLatch(1);
             ZooKeeper zooKeeper = new ZooKeeper(zkAddress,3000,new Watcher() {
@@ -23,6 +27,13 @@ public  abstract class Zoo {
                 public void process(WatchedEvent event) {
                     if (event.getState() == Event.KeeperState.SyncConnected) {
                         connectedSignal.countDown();
+                    }else if(event.getState() == Event.KeeperState.Expired
+                            || event.getState() == Event.KeeperState.Disconnected
+                            ){
+                        if(null != timeOutHandler) {
+                            System.out.println("Zoo.connect session " + event.getState() +". now Call timeOutHandler ");
+                            timeOutHandler.run();
+                        }
                     }
                 }
             });
@@ -34,6 +45,8 @@ public  abstract class Zoo {
             throw new RuntimeException("cann't conn to : "+ zkAddress,e);
         }
     }
+
+
 
 
     public static String flipPath(String groupName){

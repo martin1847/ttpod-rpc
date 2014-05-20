@@ -14,10 +14,16 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 /**
+ *
+ * Not Support Retry When KeeperState.Expired .
+ *
+ * @see com.ttpod.rpc.netty.pool.impl.CuratorGroupManager
+ *
  * date: 14-2-13 下午6:40
  *
  * @author: yangyang.cong@ttpod.com
  */
+@Deprecated
 public class DefaultGroupManager implements Runnable,GroupManager {
 
 

@@ -4,12 +4,19 @@ import com.ttpod.rpc.client.ClientHandler;
 import com.ttpod.rpc.netty.Client;
 import com.ttpod.rpc.netty.client.DefaultClientHandler;
 import com.ttpod.rpc.netty.client.DefaultClientInitializer;
-import com.ttpod.rpc.pool.ChannelPool;
 import com.ttpod.rpc.netty.pool.CloseableChannelFactory;
-import com.ttpod.rpc.pool.GroupManager;
-import com.ttpod.rpc.pool.GroupMemberObserver;
+import com.ttpod.rpc.pool.ChannelPool;
 import io.netty.channel.Channel;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.imps.CuratorFrameworkState;
+import org.apache.curator.framework.recipes.cache.ChildData;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
+import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
+import org.apache.curator.retry.RetryNTimes;
+import org.apache.curator.utils.ZKPaths;
+import org.apache.zookeeper.common.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,10 +37,10 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
 
     CopyOnWriteArrayList<ClientHandler> handlers = new CopyOnWriteArrayList<>();
 
-    String zkAddress ;
     String groupName;
     int clientsPerServer;
-
+    CuratorFramework curator;
+    PathChildrenCache groupMembers;
 
     Map<String,CloseableChannelFactory> connPool = new ConcurrentHashMap<>();
 
@@ -44,25 +51,42 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
     }
 
     public ZkChannelPool(String zkAddress,String groupName, int clientsPerServer) {
-        this.zkAddress = zkAddress;
-        this.clientsPerServer = clientsPerServer;
-        this.groupName = groupName;
-
-        init();
+        this(CuratorFrameworkFactory.newClient(zkAddress,
+                5000, 3000, new RetryNTimes(10, 1500)),groupName,clientsPerServer);
     }
 
-    ZooKeeper zooKeeper;
-    GroupManager groupManager;
+    public ZkChannelPool(CuratorFramework curator , final String groupNameNormal, int clientsPerServer) {
+        this.curator = curator;
+        this.clientsPerServer = clientsPerServer;
+        this.groupName = Zoo.flipPath(groupNameNormal);
 
+        if( curator.getState() == CuratorFrameworkState.LATENT ) {
+            curator.start();
+        }
 
+        groupMembers = new PathChildrenCache(curator,groupName,false);
+        groupMembers.getListenable().addListener(new PathChildrenCacheListener() {
+            @Override
+            public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
 
-    public void init(){
-        zooKeeper = Zoo.connect(zkAddress);
-        groupManager = new DefaultGroupManager(zooKeeper,groupName,new GroupMemberObserver() {
-            public void onChange(List<String> currentNodes) {
-                setUpClient(currentNodes);
+                logger.info("Group {} member {}  -> {} ",groupName,event.getType(),event.getData());
+
+                List<String> ipPorts = new ArrayList<>();
+                for(ChildData data : groupMembers.getCurrentData()){
+                    ipPorts.add(ZKPaths.getNodeFromPath(data.getPath()));
+                }
+
+                setUpClient(ipPorts);
             }
         });
+        try {
+            groupMembers.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+        } catch (Exception e) {
+            logger.error("Error Start Connect To Members of Group " + groupName,e);
+            e.printStackTrace();
+        }
+
+
     }
 
     static final int AVOID_OVER_FLOW = 0xFFFF;
@@ -83,8 +107,15 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
             logger.info("Disconnect From : {}", entry.getKey());
             entry.getValue().shutdown();
         }
-        logger.info("Shutdown GroupManager ...");
-        groupManager.shutdown();
+        logger.info("Shutdown CuratorFramework ...");
+
+        if(null != groupMembers){
+            IOUtils.closeStream(groupMembers);
+        }
+
+        if(null != curator){
+            curator.close();
+        }
     }
 
     ClientHandler fetchHandler(Channel channel){
