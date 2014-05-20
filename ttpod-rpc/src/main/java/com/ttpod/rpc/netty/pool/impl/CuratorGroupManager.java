@@ -56,8 +56,12 @@ public class CuratorGroupManager implements GroupManager {
         });
     }
 
-    @Override
+
+    static final byte[] EMPTY_STR="".getBytes();
     public String join(String memberName, byte[] data) {
+        if(null == data){
+            data = EMPTY_STR;
+        }
         try {
             ephemeralCache.put(memberName, data);
             return curator.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL)
