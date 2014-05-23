@@ -96,6 +96,13 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
         return handlers.get(  ( ++tick & AVOID_OVER_FLOW )  % handlers.size() );
     }
 
+
+
+    @Override
+    public boolean hasNext() {
+        return handlers.size() != 0;
+    }
+
     @Override
     public void remove(ClientHandler c) {
         handlers.remove(c);
@@ -162,5 +169,9 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
         }
     }
 
+
+    public void remove() {
+        throw new UnsupportedOperationException();
+    }
 
 }
