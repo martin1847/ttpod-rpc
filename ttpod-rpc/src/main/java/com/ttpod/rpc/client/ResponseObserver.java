@@ -2,7 +2,6 @@ package com.ttpod.rpc.client;
 
 import com.ttpod.rpc.ResponseBean;
 
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
@@ -16,22 +15,23 @@ public interface ResponseObserver<Data> {
     void onSuccess(ResponseBean<Data> response);
 
     class Blocking<Data> implements ResponseObserver<Data>{
+        static final long ONE_MINUTE = 60 * 1000L;
         public volatile ResponseBean<Data> response;
         public void onSuccess(ResponseBean<Data> response) {
             this.response = response;
             synchronized (this) {
-                notify();
+                notifyAll();//notify
             }
         }
 
         public ResponseBean<Data> get(){
-            synchronized (this) {
-                while (null == response) {
-                    try {
-                        wait();
-                    } catch (InterruptedException ignored) {
-                    }
-                }
+            if(null == response) synchronized (this) {
+//                    while (null == response) {
+                        try {
+                            wait(ONE_MINUTE);
+                        } catch (InterruptedException ignored) {
+                        }
+//                    }
             }
             return response;
         }
