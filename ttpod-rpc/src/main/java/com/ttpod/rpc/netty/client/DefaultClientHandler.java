@@ -123,4 +123,11 @@ public class DefaultClientHandler extends SimpleChannelInboundHandler<ResponseBe
         }
         super.channelInactive(ctx);
     }
+
+//    public void activeClose(){
+//        if(null != channel){
+//            logger.info("activeClose, may reset Clients . disconnect with {} .",channel.remoteAddress());
+//            channel.close().syncUninterruptibly();
+//        }
+//    }
 }

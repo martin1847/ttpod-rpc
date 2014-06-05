@@ -10,7 +10,6 @@ import io.netty.channel.Channel;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
-import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
@@ -21,8 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -35,14 +37,14 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
     static final Logger logger = LoggerFactory.getLogger(ZkChannelPool.class);
 
 
-    CopyOnWriteArrayList<ClientHandler> handlers = new CopyOnWriteArrayList<>();
+
 
     String groupName;
     int clientsPerServer;
     CuratorFramework curator;
     PathChildrenCache groupMembers;
-
-    Map<String,CloseableChannelFactory> connPool = new ConcurrentHashMap<>();
+    CopyOnWriteArrayList<ClientHandler> handlers = new CopyOnWriteArrayList<>();
+    private ConcurrentMap<String,CloseableChannelFactory> clients = new ConcurrentHashMap<>();
 
     public ZkChannelPool(String zkAddress,String groupName){
         this(zkAddress,groupName,
@@ -68,15 +70,27 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
         groupMembers.getListenable().addListener(new PathChildrenCacheListener() {
             @Override
             public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
-
-                logger.info("Group {} member {}  -> {} ",groupName,event.getType(),event.getData());
-
-                List<String> ipPorts = new ArrayList<>();
-                for(ChildData data : groupMembers.getCurrentData()){
-                    ipPorts.add(ZKPaths.getNodeFromPath(data.getPath()));
+                PathChildrenCacheEvent.Type type = event.getType();
+                if( type == PathChildrenCacheEvent.Type.INITIALIZED){
+                    return;
                 }
-
-                setUpClient(ipPorts);
+                String ipPort =  ZKPaths.getNodeFromPath(event.getData().getPath());
+                logger.info("Group {} member {}  -> {} ",groupName,type,ipPort);
+                if( type == PathChildrenCacheEvent.Type.CHILD_ADDED ){
+                    connTo(ipPort,handlers,clients);
+                }else if( type == PathChildrenCacheEvent.Type.CHILD_REMOVED ){
+                    CloseableChannelFactory cf = clients.remove(ipPort);
+                    if(null != cf){
+                        logger.info(" CHILD_REMOVED , disconnect from {} ",ipPort);
+                        cf.shutdown();
+                    }
+                }
+//                List<String> ipPorts = new ArrayList<>();
+//                for(ChildData data : groupMembers.getCurrentData()){
+//                    ipPorts.add();
+//                }
+//
+//                resetUpClient(ipPorts);
             }
         });
         try {
@@ -110,10 +124,7 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
 
     @Override
     public void shutdown() {
-        for( Map.Entry<String,CloseableChannelFactory> entry: connPool.entrySet()){
-            logger.info("Disconnect From : {}", entry.getKey());
-            entry.getValue().shutdown();
-        }
+        closeCachedClients();
         logger.info("Shutdown CuratorFramework ...");
 
         if(null != groupMembers){
@@ -125,6 +136,12 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
         }
     }
 
+    void closeCachedClients(){
+        for( Map.Entry<String,CloseableChannelFactory> entry: clients.entrySet()){
+            logger.info("Disconnect From : {}", entry.getKey());
+            entry.getValue().shutdown();
+        }
+    }
     ClientHandler fetchHandler(Channel channel){
         DefaultClientHandler handler = channel.pipeline().get(DefaultClientHandler.class);
         handler.setChannelPool(this);
@@ -133,40 +150,37 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
 
 
     static final boolean USE_NIO = ! Boolean.getBoolean("Client.BIO");
-    void setUpClient(List<String> ipPorts){
 
-        Set<String> closed =  connPool.keySet();
-        closed.removeAll(ipPorts);
 
-        for(String needClose : closed){
-            connPool.remove(needClose).shutdown();
+
+    synchronized void connTo(String ipPort,List<ClientHandler> handlers,Map<String,CloseableChannelFactory> clients){
+        String[] ip_port = ipPort.trim().split(":");
+        String ip = ip_port[0];
+        int port = Integer.parseInt(ip_port[1]);
+
+        CloseableChannelFactory fac = new Client(new InetSocketAddress(ip,port),USE_NIO,new DefaultClientInitializer());
+        clients.put(ipPort,fac);
+        //TODO server weight
+        // zooKeeper.getData(groupName+"/"+addr,false, null);
+        for(int i = clientsPerServer;i>0;i--){
+            handlers.add(fetchHandler(fac.newChannel()));
         }
+        logger.info("Success Connect To  : {} ,Establish {} Connections" , ipPort , clientsPerServer);
+    }
 
-        ipPorts.removeAll(closed);
+    @Deprecated
+    synchronized void  resetUpClient(List<String> ipPorts){
 
+        CopyOnWriteArrayList<ClientHandler> newHandlers = new CopyOnWriteArrayList<>();
+        ConcurrentMap<String,CloseableChannelFactory> newClients = new ConcurrentHashMap<>();
         for (String addr : ipPorts){
-            String[] ip_port = addr.trim().split(":");
-            String ip = ip_port[0];
-            int port = Integer.parseInt(ip_port[1]);
-
-
-
-            CloseableChannelFactory fac = new Client(new InetSocketAddress(ip,port),USE_NIO,new DefaultClientInitializer());
-            connPool.put(addr,fac);
-
-            //TODO server weight
-            //            zooKeeper.getData(groupName+"/"+addr,false, null);
-            List<ClientHandler> newClients = new ArrayList<>(clientsPerServer);
-
-            for(int i = clientsPerServer;i>0;i--){
-                newClients.add(fetchHandler(fac.newChannel()));
-            }
-            Collections.shuffle(newClients);
-
-            handlers.addAll(newClients);
-            logger.info("Success Connect To  : {} ,Establish {} Connections" , addr , clientsPerServer);
-
+            connTo(addr,newHandlers,newClients);
         }
+        Collections.shuffle(newHandlers);
+        this.handlers = newHandlers;//
+        logger.info(" close old connected clients {} ",this.clients.entrySet());
+        closeCachedClients();
+        this.clients = newClients;
     }
 
 
