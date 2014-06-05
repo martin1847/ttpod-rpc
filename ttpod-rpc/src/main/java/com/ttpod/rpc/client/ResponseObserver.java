@@ -25,13 +25,12 @@ public interface ResponseObserver<Data> {
         }
 
         public ResponseBean<Data> get(){
-            if(null == response) synchronized (this) {
-//                    while (null == response) {
-                        try {
-                            wait(ONE_MINUTE);
-                        } catch (InterruptedException ignored) {
-                        }
-//                    }
+            if(null == response) synchronized (this){
+                if(null == response)//while (null == response)
+                    try {
+                        wait(ONE_MINUTE);
+                    } catch (InterruptedException ignored) {
+                    }
             }
             return response;
         }
