@@ -5,10 +5,10 @@ apply from: "${rootProject.projectDir}/gradle/provided.gradle"
 apply from: "${rootProject.projectDir}/gradle/nexus.gradle"
 
 configurations {
-    compile.exclude module: 'commons-logging'
-    compile.exclude module: 'log4j'
-    compile.exclude module: 'jackson-mapper-asl'
-    compile.exclude module: 'slf4j-log4j12'
+    all*.exclude module: 'commons-logging'
+    all*.exclude module: 'log4j'
+    all*.exclude module: 'jackson-mapper-asl'
+    all*.exclude module: 'slf4j-log4j12'
 //    all*.exclude group: 'org.gradle.test.excludes', module: 'reports'
 }
 dependencies {
@@ -28,7 +28,9 @@ dependencies {
 
     optional 'com.alibaba:fastjson:1.1.39'
 
-    optional 'org.apache.curator:curator-recipes:2.4.2'
+    optional ('org.apache.curator:curator-recipes:2.4.2'){
+        exclude module: 'slf4j-api'
+    }
 //    optional 'org.apache.curator:curator-client:2.4.2'
     optional('org.apache.zookeeper:zookeeper:3.4.6'){
         exclude module: 'slf4j-log4j12'
