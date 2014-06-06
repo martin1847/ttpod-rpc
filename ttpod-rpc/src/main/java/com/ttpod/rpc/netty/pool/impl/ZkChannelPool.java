@@ -10,6 +10,7 @@ import io.netty.channel.Channel;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
+import org.apache.curator.framework.recipes.cache.ChildData;
 import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
@@ -70,12 +71,13 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
         groupMembers.getListenable().addListener(new PathChildrenCacheListener() {
             @Override
             public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
+                ChildData data = event.getData();
                 PathChildrenCacheEvent.Type type = event.getType();
-                if( type == PathChildrenCacheEvent.Type.INITIALIZED){
+                logger.info("Group {} member {}  -> {} ",groupName,type,data);
+                if( null == data){
                     return;
                 }
-                String ipPort =  ZKPaths.getNodeFromPath(event.getData().getPath());
-                logger.info("Group {} member {}  -> {} ",groupName,type,ipPort);
+                String ipPort =  ZKPaths.getNodeFromPath(data.getPath());
                 if( type == PathChildrenCacheEvent.Type.CHILD_ADDED ){
                     connTo(ipPort,handlers,clients);
                 }else if( type == PathChildrenCacheEvent.Type.CHILD_REMOVED ){
