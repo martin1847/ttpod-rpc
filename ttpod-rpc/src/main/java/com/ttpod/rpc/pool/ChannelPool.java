@@ -7,7 +7,7 @@ import java.util.Iterator;
  *
  * @author: yangyang.cong@ttpod.com
  */
-public interface ChannelPool<ClientHandler> extends Iterator {
+public interface ChannelPool<ClientHandler> extends Iterator<ClientHandler> {
 
 //    void add(Channel channel);
 
