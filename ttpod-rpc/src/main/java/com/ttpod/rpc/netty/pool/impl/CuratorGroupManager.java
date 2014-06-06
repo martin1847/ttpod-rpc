@@ -8,6 +8,8 @@ import org.apache.curator.framework.state.ConnectionState;
 import org.apache.curator.framework.state.ConnectionStateListener;
 import org.apache.curator.retry.RetryUntilElapsed;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,15 +64,23 @@ public class CuratorGroupManager implements GroupManager {
         if(null == data){
             data = EMPTY_STR;
         }
+        ephemeralCache.put(memberName, data);
+        String path = groupName + "/" + memberName;
         try {
-            ephemeralCache.put(memberName, data);
-            return curator.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL)
-                    .forPath(groupName + "/" + memberName, data);
-        } catch (Exception e) {
-            ephemeralCache.remove(memberName);
+
+            Stat stat = curator.checkExists().forPath(path);
+            if(stat == null){
+                return curator.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL)
+                    .forPath(path, data);
+            }
+        }catch (KeeperException.NodeExistsException e){
+            logger.error(" path already exists .",e);
+        }catch (Exception e) {
+//            ephemeralCache.remove(memberName);
             logger.error(memberName + " join group " + groupName + " Faild !!!", e);
             throw new RuntimeException(memberName + " join group " + groupName + " Faild !!!", e);
         }
+        return path;
     }
 
     @Override
