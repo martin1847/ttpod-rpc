@@ -3,14 +3,17 @@ package com.ttpod.rpc.netty;
 import com.ttpod.rpc.pool.GroupManager;
 import com.ttpod.rpc.util.IpAddress;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -95,9 +98,9 @@ public class Server {
 
         if(null != groupManager){
             groupManager.shutdown();
-            logger.info("wait 2s to exit group,so clients not use this server.");
+            logger.info("wait 5s to exit group,so clients not use this server.");
             try {
-                Thread.sleep(2000L);
+                Thread.sleep(5000L);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
