@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -169,9 +170,12 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
         }
         //TODO server weight
         // zooKeeper.getData(groupName+"/"+addr,false, null);
+        List<ClientHandler> tmp = new ArrayList<>(clientsPerServer);
         for(int i = clientsPerServer;i>0;i--){
-            handlers.add(fetchHandler(fac.newChannel()));
+            tmp.add(fetchHandler(fac.newChannel()));
         }
+        handlers.addAll(tmp);
+        Collections.shuffle(handlers);
         logger.info("Success Connect To  : {} ,Establish {} Connections" , ipPort , clientsPerServer);
     }
 
