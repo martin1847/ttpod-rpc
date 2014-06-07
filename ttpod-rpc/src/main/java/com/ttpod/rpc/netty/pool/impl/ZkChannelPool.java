@@ -165,7 +165,7 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
             fac = new Client(new InetSocketAddress(ip, port), USE_NIO, new DefaultClientInitializer());
             clients.put(ipPort, fac);
         }else{
-            logger.info("reuse already exists client for : {} ",ip_port);
+            logger.info("reuse already exists client for : {} ",ipPort);
         }
         //TODO server weight
         // zooKeeper.getData(groupName+"/"+addr,false, null);
