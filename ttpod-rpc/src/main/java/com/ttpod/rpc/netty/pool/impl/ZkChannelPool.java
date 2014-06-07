@@ -160,8 +160,11 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
         String ip = ip_port[0];
         int port = Integer.parseInt(ip_port[1]);
 
-        CloseableChannelFactory fac = new Client(new InetSocketAddress(ip,port),USE_NIO,new DefaultClientInitializer());
-        clients.put(ipPort,fac);
+        CloseableChannelFactory fac = clients.get(ipPort);
+        if ( null == fac ) {
+            fac = new Client(new InetSocketAddress(ip, port), USE_NIO, new DefaultClientInitializer());
+            clients.put(ipPort, fac);
+        }
         //TODO server weight
         // zooKeeper.getData(groupName+"/"+addr,false, null);
         for(int i = clientsPerServer;i>0;i--){
