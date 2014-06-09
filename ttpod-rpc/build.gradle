@@ -28,9 +28,12 @@ dependencies {
 
     optional 'com.alibaba:fastjson:1.1.39'
 
-    optional ('org.apache.curator:curator-recipes:2.4.2'){
+    optional ('org.apache.curator:curator-recipes:2.5.0'){
         exclude module: 'slf4j-api'
     }
+
+
+
 //    optional 'org.apache.curator:curator-client:2.4.2'
     optional('org.apache.zookeeper:zookeeper:3.4.6'){
         exclude module: 'slf4j-log4j12'
@@ -39,6 +42,8 @@ dependencies {
         exclude module: 'slf4j-api'
         exclude module: 'jackson-mapper-asl'
     }
+
+    testCompile 'org.apache.curator:curator-x-discovery-server:2.4.2'
 
 //    optional 'org.apache.curator:curator-x-discovery:2.4.0'
 //    optional ('org.apache.curator:curator-examples:2.4.0'){

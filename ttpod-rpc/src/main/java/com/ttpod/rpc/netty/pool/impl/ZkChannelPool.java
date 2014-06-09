@@ -74,6 +74,7 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
             public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
                 ChildData data = event.getData();
                 PathChildrenCacheEvent.Type type = event.getType();
+                //CONNECTION_LOST CONNECTION_SUSPENDED RECONNECTED
                 logger.info("Group {} member {}  -> {} ",groupName,type,data);
                 if( null == data){
                     return;
