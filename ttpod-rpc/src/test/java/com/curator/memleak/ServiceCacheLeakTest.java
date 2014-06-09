@@ -14,7 +14,8 @@ public class ServiceCacheLeakTest {
     @Test
     public void serviceCacheInstancesLeaked() throws Exception {
 
-        final CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient("zookeeper1:2181,zookeeper2:2181,zookeeper3:2181", new RetryOneTime(1));
+        //https://github.com/apache/curator/commit/9b9b9ae96c9c5fa423b263aba3768fc16c77a794
+        final CuratorFramework curatorFramework = CuratorFrameworkFactory.newClient("192.168.8.12:2181", new RetryOneTime(1));
         curatorFramework.start();
 
         final ServiceDiscovery<Void> serviceDiscovery = ServiceDiscoveryBuilder.builder(Void.class).client(curatorFramework.usingNamespace("dev")).basePath("/instances").build();
