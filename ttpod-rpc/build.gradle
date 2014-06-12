@@ -27,8 +27,8 @@ dependencies {
     runtime 'com.google.protobuf:protobuf-java:2.5.0'
 
     optional 'com.alibaba:fastjson:1.1.39'
-
-    optional ('org.apache.curator:curator-recipes:2.5.0'){
+//
+    optional ("org.apache.curator:curator-recipes:$curatorVersion"){//2.5.0
         exclude module: 'slf4j-api'
     }
 
@@ -43,7 +43,7 @@ dependencies {
         exclude module: 'jackson-mapper-asl'
     }
 
-    testCompile 'org.apache.curator:curator-x-discovery-server:2.4.2'
+//    testCompile 'org.apache.curator:curator-x-discovery-server:2.4.2'
 
 //    optional 'org.apache.curator:curator-x-discovery:2.4.0'
 //    optional ('org.apache.curator:curator-examples:2.4.0'){
