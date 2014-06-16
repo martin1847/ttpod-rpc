@@ -7,24 +7,21 @@ import com.ttpod.rpc.netty.client.DefaultClientInitializer;
 import com.ttpod.rpc.netty.pool.CloseableChannelFactory;
 import com.ttpod.rpc.pool.ChannelPool;
 import io.netty.channel.Channel;
+import io.netty.util.CharsetUtil;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.PathChildrenCache;
-import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
-import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
+import org.apache.curator.framework.recipes.cache.*;
 import org.apache.curator.retry.RetryNTimes;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.common.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -38,38 +35,86 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
 
     static final Logger logger = LoggerFactory.getLogger(ZkChannelPool.class);
 
+    static final String WEIGHT_PRE = "/Config/ServerWeight";
 
 
 
     String groupName;
+    String weightPath;
     int clientsPerServer;
     CuratorFramework curator;
     PathChildrenCache groupMembers;
+    NodeCache weightPropertiesCache;
+    Map<String,Integer> weightMap = Collections.emptyMap();
+
+    ConcurrentMap<String,CloseableChannelFactory> clients = new ConcurrentHashMap<>();
     CopyOnWriteArrayList<ClientHandler> handlers = new CopyOnWriteArrayList<>();
-    private ConcurrentMap<String,CloseableChannelFactory> clients = new ConcurrentHashMap<>();
 
     public ZkChannelPool(String zkAddress,String groupName){
-        this(zkAddress,groupName,
-                Math.max(2, Runtime.getRuntime().availableProcessors() / 2)
-        );
+        this(zkAddress,groupName,2);
+    }
+    public ZkChannelPool(CuratorFramework curator , final String groupNameNormal){
+        this(curator,groupNameNormal,2);
     }
 
+//    @Deprecated
     public ZkChannelPool(String zkAddress,String groupName, int clientsPerServer) {
         this(CuratorFrameworkFactory.newClient(zkAddress,
                 5000, 3000, new RetryNTimes(10, 1500)),groupName,clientsPerServer);
     }
-
+//    @Deprecated
     public ZkChannelPool(CuratorFramework curator , final String groupNameNormal, int clientsPerServer) {
         this.curator = curator;
         this.clientsPerServer = clientsPerServer;
+
         this.groupName = Zoo.flipPath(groupNameNormal);
+        this.weightPath = WEIGHT_PRE + this.groupName;
 
         if( curator.getState() == CuratorFrameworkState.LATENT ) {
             curator.start();
         }
 
-        groupMembers = new PathChildrenCache(curator,groupName,false);
-        groupMembers.getListenable().addListener(new PathChildrenCacheListener() {
+        weightPropertiesCache = initWeight(curator, weightPath);
+        groupMembers = initGroupMembers(curator,groupName);
+
+
+    }
+
+
+    void buildWeightMap(NodeCache cache) throws IOException {
+        ChildData data =  cache.getCurrentData();
+        byte[] bytes;
+        if( null != data  && null != (bytes = data.getData()) ){
+            Properties  prop =  new Properties();
+            prop.load(new StringReader(new String(bytes, CharsetUtil.UTF_8)));
+            Map<String,Integer> wMap = new HashMap<>();
+            for(String key : prop.stringPropertyNames()){
+                wMap.put( key, Integer.valueOf(prop.getProperty(key).trim()) );
+            }
+            weightMap = wMap;
+            logger.info("refresh service weight {} .",prop);
+        }
+    }
+
+    NodeCache initWeight(CuratorFramework curator ,String weightPath){
+        final NodeCache cache= new NodeCache(curator, weightPath);
+        cache.getListenable().addListener(new NodeCacheListener() {
+            public void nodeChanged() throws Exception {
+                buildWeightMap(cache);
+            }
+        });
+        try {
+            cache.start(true);
+            buildWeightMap(cache);
+        } catch (Exception e) {
+            logger.error("Start NodeCache error for path: {}, error info: {}",  weightPath, e.getMessage());
+        }
+        return cache;
+    }
+
+    PathChildrenCache initGroupMembers(CuratorFramework curator ,final String groupName){
+        PathChildrenCache childrenCache =  new PathChildrenCache(curator,groupName,false);
+        childrenCache.getListenable().addListener(new PathChildrenCacheListener() {
             @Override
             public void childEvent(CuratorFramework client, PathChildrenCacheEvent event) throws Exception {
                 ChildData data = event.getData();
@@ -98,14 +143,14 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
             }
         });
         try {
-            groupMembers.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+            childrenCache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
         } catch (Exception e) {
             logger.error("Error Start Connect To Members of Group " + groupName,e);
             e.printStackTrace();
         }
-
-
+        return childrenCache;
     }
+
 
     static final int AVOID_OVER_FLOW = 0xFFFF;
     int tick; // use AtomicInteger ? not needed..
@@ -130,6 +175,11 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
     public void shutdown() {
         closeCachedClients();
         logger.info("Shutdown CuratorFramework ...");
+
+
+        if(null != weightPropertiesCache){
+            IOUtils.closeStream(weightPropertiesCache);
+        }
 
         if(null != groupMembers){
             IOUtils.closeStream(groupMembers);
@@ -169,15 +219,26 @@ public class ZkChannelPool implements ChannelPool<ClientHandler> {
         }else{
             logger.info("reuse already exists client for : {} ",ipPort);
         }
-        //TODO server weight
+        int clientWeight = clientsPerServer;
+        if(!weightMap.isEmpty()){
+            Integer myWight = weightMap.get(ipPort);
+            if(null != myWight && myWight > 0){
+                int total = 0;
+                for(int w : weightMap.values()){total+=w;}
+                if(total>0){
+                    clientWeight = Math.max(1,Math.round(Runtime.getRuntime().availableProcessors() * myWight/(float)total));
+                    logger.info(" {} weight of clients {} " ,ipPort,clientWeight);
+                }
+            }
+        }
         // zooKeeper.getData(groupName+"/"+addr,false, null);
-        List<ClientHandler> tmp = new ArrayList<>(clientsPerServer);
-        for(int i = clientsPerServer;i>0;i--){
+        List<ClientHandler> tmp = new ArrayList<>(clientWeight);
+        for(int i = clientWeight;i>0;i--){
             tmp.add(fetchHandler(fac.newChannel()));
         }
         handlers.addAll(tmp);
         Collections.shuffle(handlers);
-        logger.info("Success Connect To  : {} ,Establish {} Connections" , ipPort , clientsPerServer);
+        logger.info("Success Connect To  : {} ,Establish {} Connections" , ipPort , clientWeight);
     }
 
     @Deprecated

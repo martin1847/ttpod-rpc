@@ -1,11 +1,11 @@
 package test;
 
 
+import com.alibaba.fastjson.JSON;
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
-import com.ttpod.rest.common.util.JSONUtil;
 import com.ttpod.rpc.ResponseBean;
 
 import java.util.ArrayList;
@@ -76,13 +76,13 @@ public class ser {
 
 
 
-        Bean bean = JSONUtil.jsonToBean(json,Bean.class);
-        Map map = JSONUtil.jsonToMap(json);
+        Bean bean = JSON.parseObject(json, Bean.class);
+        Map map = JSON.parseObject(json);
 
 
         l = System.currentTimeMillis();
         for(int i = 0;i<test;i++){
-            JSONUtil.beanToJson(bean);
+            JSON.toJSONString(bean);
         }
         t = System.currentTimeMillis() -l;
         System.out.println("beanToJson cost : " + t +" ms, avg : " + t/test);
@@ -90,7 +90,7 @@ public class ser {
 
         l = System.currentTimeMillis();
         for(int i = 0;i<test;i++){
-            JSONUtil.beanToJson(map);
+            JSON.toJSONString(map);
         }
         t = System.currentTimeMillis() -l;
         System.out.println("mapToJson cost : " + t +" ms, avg : " + t/test);
@@ -116,7 +116,7 @@ public class ser {
         bean.setData(data);
 
         for(int i = 0 ;i < reply; i++){
-            data.add(JSONUtil.jsonToBean(json,clz));
+            data.add(JSON.parseObject(json,clz));
         }
 
         return bean;
