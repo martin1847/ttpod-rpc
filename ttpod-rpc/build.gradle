@@ -14,7 +14,7 @@ configurations {
 dependencies {
 
 //    optional 'io.netty:netty-all:5.0.0.Alpha1'//4.0.13.Final'
-    compile 'io.netty:netty-all:4.0.18.Final'//4.0.13.Final'
+    compile 'io.netty:netty-all:4.0.20.Final'//4.0.13.Final'
 
     compile 'org.slf4j:slf4j-api:1.7.7'
 //    compile 'commons-lang:commons-lang:2.6'
@@ -26,11 +26,9 @@ dependencies {
 //    compile 'com.dyuproject.protostuff:protostuff-runtime-registry:1.0.8'
     runtime 'com.google.protobuf:protobuf-java:2.5.0'
 
-    optional 'com.alibaba:fastjson:1.1.39'
+    optional 'com.alibaba:fastjson:1.1.41'
 //
-    optional ("org.apache.curator:curator-recipes:$curatorVersion"){//2.5.0
-        exclude module: 'slf4j-api'
-    }
+
 
 
 
@@ -43,7 +41,12 @@ dependencies {
         exclude module: 'jackson-mapper-asl'
     }
 
-//    testCompile 'org.apache.curator:curator-x-discovery-server:2.4.2'
+    optional ("org.apache.curator:curator-recipes:2.5.0"){//2.5.0
+//        optional ("org.apache.curator:curator-recipes:$curatorVersion"){//2.5.0
+            exclude module: 'slf4j-api'
+    }
+    testCompile 'org.apache.curator:curator-x-discovery-server:2.5.0'
+    testCompile 'org.codehaus.jackson:jackson-mapper-lgpl:1.9.13' // "com.fasterxml.jackson.core:jackson-databind:2.4.1.1"
 
 //    optional 'org.apache.curator:curator-x-discovery:2.4.0'
 //    optional ('org.apache.curator:curator-examples:2.4.0'){
