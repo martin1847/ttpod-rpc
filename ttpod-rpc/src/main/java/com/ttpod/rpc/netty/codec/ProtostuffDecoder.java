@@ -35,19 +35,23 @@ public abstract class ProtostuffDecoder<DataBean> extends MessageToMessageDecode
     protected void decode(ChannelHandlerContext ctx, ByteBuf msg, List<Object> out) throws Exception {
         final byte[] array;
         final int offset;
-        final int length = msg.readableBytes();
-        if (msg.hasArray()) {
-            array = msg.array();
-            offset = msg.arrayOffset() + msg.readerIndex();
-        } else {
-            array = new byte[length];
-            msg.getBytes(msg.readerIndex(), array, 0, length);
-            offset = 0;
-        }
-        // deser
-        DataBean pojo = newBean();
-        ProtostuffIOUtil.mergeFrom(array, offset, length, pojo, cachedSchema());
-        out.add(pojo);
+//        try {
+            final int length = msg.readableBytes();
+            if (msg.hasArray()) {
+                array = msg.array();
+                offset = msg.arrayOffset() + msg.readerIndex();
+            } else {
+                array = new byte[length];
+                msg.getBytes(msg.readerIndex(), array, 0, length);
+                offset = 0;
+            }
+            // deser
+            DataBean pojo = newBean();
+            ProtostuffIOUtil.mergeFrom(array, offset, length, pojo, cachedSchema());
+            out.add(pojo);
+//        }finally {//TODO 20140820 Mem Leak ?
+//             logger.debug("ProtostuffDecoder release ByteBuf {} ",msg.release());
+//        }
     }
 
     abstract protected DataBean newBean();

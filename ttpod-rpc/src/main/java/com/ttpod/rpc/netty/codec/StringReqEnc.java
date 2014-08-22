@@ -22,6 +22,20 @@ public class StringReqEnc extends MessageToByteEncoder<RequestBean<String>> {
     static final int BYTE_FIELDS = 1*2 + 3 * 1;// _id + 3 byte
     public static final short MAGIC  = 0XCF;
 
+    public StringReqEnc() {
+        super(false);
+    }
+
+    @Override
+    protected ByteBuf allocateBuffer(ChannelHandlerContext ctx, @SuppressWarnings("unused") RequestBean<String> msg,
+                                     boolean preferDirect) throws Exception {
+//        if (preferDirect) {
+//            return ctx.alloc().ioBuffer();
+//        } else {
+            return ctx.alloc().heapBuffer();
+//        }
+    }
+
     @Override
     protected void encode(ChannelHandlerContext ctx, RequestBean<String> req, ByteBuf out) throws Exception {
 

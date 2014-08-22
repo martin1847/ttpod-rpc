@@ -6,6 +6,7 @@
             <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
         </layout>
     </appender>
+    <logger name="com.ttpod.rpc" level="DEBUG"/>
     <logger name="com.ttpod.rest.web.support" level="WARN"/>
     <logger name="org.apache.zookeeper.ZooKeeper" level="WARN"/>
     <root level="INFO">

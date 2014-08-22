@@ -6,6 +6,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.CharsetUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -19,6 +21,7 @@ public class StringReqDec extends ByteToMessageDecoder {
     static final int MAGIC_BYTE  = 1;
     static final int LENGTH_BYTE  = 2;
     static final int HEADER_BYTE   = MAGIC_BYTE + LENGTH_BYTE ;
+    protected static final Logger logger = LoggerFactory.getLogger(StringReqDec.class);
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -45,6 +48,9 @@ public class StringReqDec extends ByteToMessageDecoder {
         int endIndex =  frameLength  +  dataIndex;
         String q = in.toString(stringIndex,endIndex - stringIndex, CharsetUtil.UTF_8);
         in.readerIndex(endIndex);
+
+        // TODO needd release here?
+//        logger.debug("StringReqDec release ByteBuf  in {} ",in.release());
 
         RequestBean<String> req = new RequestBean<>();
         InnerBindUtil.bind(req,reqId);
