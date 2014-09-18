@@ -10,8 +10,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public interface OutstandingContainer {
 
-    ResponseObserver remove(short reqId);
-    ResponseObserver put(short reqId,ResponseObserver observer);
+    <T>ResponseObserver<T> remove(short reqId);
+    <T>ResponseObserver<T> put(short reqId,ResponseObserver<T> observer);
     short nextId();
 
 
