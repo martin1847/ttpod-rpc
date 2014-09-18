@@ -38,8 +38,8 @@ public class DefaultClientHandler extends SimpleChannelInboundHandler<ResponseBe
         this.outstandings = container;
     }
 
-    protected void messageReceived(ChannelHandlerContext ctx, ResponseBean msg) throws Exception {
-        ResponseObserver observer = outstandings.remove(InnerBindUtil.id(msg));
+    protected <T>void messageReceived(ChannelHandlerContext ctx, ResponseBean<T> msg) throws Exception {
+        ResponseObserver<T> observer = outstandings.remove(InnerBindUtil.id(msg));
         if(null != observer){
             observer.onSuccess(msg);
         }else{
