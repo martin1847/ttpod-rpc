@@ -1,13 +1,16 @@
 package test.netty.protostuff.codec;
 
-import com.dyuproject.protostuff.ProtostuffIOUtil;
-import com.dyuproject.protostuff.Schema;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
+//import com.dyuproject.protostuff.ProtostuffIOUtil;
+//import com.dyuproject.protostuff.Schema;
+//import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import com.ttpod.search.bean.Pojo;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import io.protostuff.ProtostuffIOUtil;
+import io.protostuff.Schema;
+import io.protostuff.runtime.RuntimeSchema;
 
 import java.util.List;
 
@@ -34,7 +37,7 @@ public class ProtostuffRuntimeDecoder extends MessageToMessageDecoder<ByteBuf> {
         // deser
         Pojo pojo = new Pojo();
         Schema<Pojo> schema =  RuntimeSchema.getSchema(Pojo.class);
-        ProtostuffIOUtil.mergeFrom(array,offset, length ,pojo, schema);
+        ProtostuffIOUtil.mergeFrom(array, offset, length, pojo, schema);
 
         out.add(pojo);
     }

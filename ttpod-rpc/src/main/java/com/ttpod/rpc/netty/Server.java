@@ -56,6 +56,7 @@ public class Server {
     public void start(){
 
 
+        String msg = "";
         try {
             ServerBootstrap b = new ServerBootstrap(); // (2)
             b.group(bossGroup, workerGroup)
@@ -68,7 +69,8 @@ public class Server {
             // Bind and start to accept incoming connections.
             channel = b.bind(port).sync().channel(); // (7)
 
-            System.out.println("Starting server at "+ IpAddress.eth0IpOrHostName() +":"+port);
+            msg = "Starting server at "+ IpAddress.eth0IpOrHostName() +":"+port;
+            System.out.println(msg);
 
             if(groupManager != null){
                 groupManager.join(IpAddress.eth0IpOrHostName() +":"+port,null);
@@ -79,7 +81,8 @@ public class Server {
             // In this example, this does not happen, but you can do that to gracefully
             // shut down your server.
             channel.closeFuture().sync();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
+            logger.error("Error !!! ===>  " + msg,e);
             e.printStackTrace();
         }
     }

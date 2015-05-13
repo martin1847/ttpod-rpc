@@ -1,12 +1,16 @@
 package test.netty.protostuff.codec;
 
-import com.dyuproject.protostuff.LinkedBuffer;
-import com.dyuproject.protostuff.ProtostuffIOUtil;
-import com.dyuproject.protostuff.Schema;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
+//import com.dyuproject.protostuff.LinkedBuffer;
+//import com.dyuproject.protostuff.ProtostuffIOUtil;
+//import com.dyuproject.protostuff.Schema;
+//import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageEncoder;
+import io.protostuff.LinkedBuffer;
+import io.protostuff.ProtostuffIOUtil;
+import io.protostuff.Schema;
+import io.protostuff.runtime.RuntimeSchema;
 
 import java.util.List;
 
@@ -53,7 +57,7 @@ public class ProtostuffRuntimeEncoder extends MessageToMessageEncoder<Object> {
 
 //        ExplicitIdStrategy.Registry.
         byte[] data = null;
-        Schema<Object>  schema = (Schema<Object>) RuntimeSchema.getSchema(msg.getClass());
+        Schema<Object> schema = (Schema<Object>) RuntimeSchema.getSchema(msg.getClass());
         data = ProtostuffIOUtil.toByteArray(msg, schema, LinkedBuffer.allocate(4096));
 
 //        schema.newMessage();

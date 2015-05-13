@@ -1,16 +1,21 @@
 package com.ttpod.rpc.netty.codec;
 
-import com.dyuproject.protostuff.ProtostuffIOUtil;
-import com.dyuproject.protostuff.Schema;
-import com.dyuproject.protostuff.runtime.DefaultIdStrategy;
-import com.dyuproject.protostuff.runtime.IdStrategy;
-import com.dyuproject.protostuff.runtime.RuntimeSchema;
+//import com.dyuproject.protostuff.ProtostuffIOUtil;
+//import com.dyuproject.protostuff.Schema;
+//import com.dyuproject.protostuff.runtime.DefaultIdStrategy;
+//import com.dyuproject.protostuff.runtime.IdStrategy;
+//import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import com.ttpod.rpc.RequestBean;
 import com.ttpod.rpc.ResponseBean;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageDecoder;
+import io.protostuff.ProtostuffIOUtil;
+import io.protostuff.Schema;
+import io.protostuff.runtime.DefaultIdStrategy;
+import io.protostuff.runtime.IdStrategy;
+import io.protostuff.runtime.RuntimeSchema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

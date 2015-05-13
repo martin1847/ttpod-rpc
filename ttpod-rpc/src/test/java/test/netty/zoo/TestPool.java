@@ -35,7 +35,7 @@ public class TestPool {
      * @throws InterruptedException
      */
     @Test
-    public void testGroup() throws InterruptedException {
+    public void testGroup() throws Exception {
 
         GroupManager group = new CuratorGroupManager("TEST",zooUrl);
         group.join("CuratorGroupManager",null);

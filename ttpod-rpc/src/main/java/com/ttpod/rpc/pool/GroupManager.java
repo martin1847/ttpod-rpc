@@ -7,7 +7,12 @@ package com.ttpod.rpc.pool;
  */
 public interface GroupManager {
 
-    String join(String memberName, byte[] data);
+    String join(String memberName, byte[] data) throws Exception;
+
+
+
+    void leave(String memberName) throws Exception;
+
 
     String name();
 

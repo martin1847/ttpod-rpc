@@ -14,19 +14,22 @@ configurations {
 dependencies {
 
 //    optional 'io.netty:netty-all:5.0.0.Alpha1'//4.0.13.Final'
-    compile 'io.netty:netty-all:4.0.23.Final'//4.0.13.Final'
+    compile 'io.netty:netty-all:4.0.28.Final'//4.0.13.Final'
 
-    compile 'org.slf4j:slf4j-api:1.7.7'
+    compile 'org.slf4j:slf4j-api:1.7.12'
 //    compile 'commons-lang:commons-lang:2.6'
 
     //https://code.google.com/p/protostuff/wiki/ThingsYouNeedToKnow
-    compile 'com.dyuproject.protostuff:protostuff-core:1.0.8'
-    compile 'com.dyuproject.protostuff:protostuff-runtime:1.0.8'
+//    compile 'com.dyuproject.protostuff:protostuff-core:1.0.8'
+//    compile 'com.dyuproject.protostuff:protostuff-runtime:1.0.8'
+
+    compile 'io.protostuff:protostuff-core:1.3.5'
+    compile 'io.protostuff:protostuff-runtime:1.3.5'
     //https://code.google.com/p/protostuff/wiki/ProtostuffRuntime#Performance_guidelines
 //    compile 'com.dyuproject.protostuff:protostuff-runtime-registry:1.0.8'
-    runtime 'com.google.protobuf:protobuf-java:2.5.0'
+//    runtime 'com.google.protobuf:protobuf-java:2.6.1'
 
-    optional 'com.alibaba:fastjson:1.1.41'
+    optional 'com.alibaba:fastjson:1.2.5'
 //
 
 
@@ -41,12 +44,14 @@ dependencies {
         exclude module: 'jackson-mapper-asl'
     }
 
-    optional ("org.apache.curator:curator-recipes:2.5.0"){//2.5.0
+    optional ("org.apache.curator:curator-x-discovery:2.8.0"){//2.5.0
 //        optional ("org.apache.curator:curator-recipes:$curatorVersion"){//2.5.0
             exclude module: 'slf4j-api'
     }
-    testCompile 'org.apache.curator:curator-x-discovery-server:2.5.0'
-    testCompile 'org.codehaus.jackson:jackson-mapper-lgpl:1.9.13' // "com.fasterxml.jackson.core:jackson-databind:2.4.1.1"
+    optional 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
+
+//    testCompile 'org.apache.curator:curator-x-discovery-server:2.8.0'
+//    testCompile 'org.codehaus.jackson:jackson-mapper-lgpl:1.9.13' // "com.fasterxml.jackson.core:jackson-databind:2.4.1.1"
     testCompile 'com.ttpod:search-common:1.0.0725'
 //    optional 'org.apache.curator:curator-x-discovery:2.4.0'
 //    optional ('org.apache.curator:curator-examples:2.4.0'){

@@ -56,7 +56,7 @@ public class DefaultGroupManager implements Runnable,GroupManager {
     }
 
     public String join(String memberName, byte[] data){
-        String path =  groupName + "/" + memberName ;
+        String path =  buildPath( memberName );
          try {
              return zk.create(path,
                      data,
@@ -67,6 +67,11 @@ public class DefaultGroupManager implements Runnable,GroupManager {
              throw new RuntimeException(memberName+ " join group " + groupName +" Faild !!!",e);
          }
      }
+
+    @Override
+    public void leave(String memberName) throws Exception {
+        zk.delete(buildPath(memberName),-1);
+    }
 
     @Override
     public String name() {
@@ -138,7 +143,7 @@ public class DefaultGroupManager implements Runnable,GroupManager {
         try {
             List<String> children = zk.getChildren(groupName, false);
             for (String child : children) {
-                zk.delete(groupName + "/" + child, -1);
+                zk.delete(buildPath( child), -1);
             }
 //            zk.delete(path, -1);
         }
@@ -147,5 +152,10 @@ public class DefaultGroupManager implements Runnable,GroupManager {
 //            System.out.printf("Group %s does not exist\n", groupName);
         }
     }
+
+    protected String buildPath(String memberName){
+        return groupName + "/" + memberName;
+    }
+
 
 }

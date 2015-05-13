@@ -1,8 +1,9 @@
 package com.ttpod.rpc.netty.codec;
 
-import com.dyuproject.protostuff.Schema;
+//import com.dyuproject.protostuff.Schema;
 import com.ttpod.rpc.RequestBean;
 import io.netty.channel.ChannelHandler;
+import io.protostuff.Schema;
 
 /**
  * date: 14-3-21 下午5:36
