@@ -16,7 +16,7 @@ public class TestPool {
 
 
 
-    String zooUrl = "192.168.8.12:2181";
+    static String zooUrl = "192.168.8.12:2181";
 
     @Test
     public void testPool() throws InterruptedException {
@@ -29,15 +29,15 @@ public class TestPool {
 
 
     /**
-     * [root@ss ~]# iptables -A INPUT -s 192.168.4.74  -p tcp --dport 2181 -j DROP
+     * [root@ss ~]# iptables -A INPUT -s 192.168.11.53  -p tcp --dport 2181 -j DROP
      * [root@ss ~]# iptables -F
      *
      * @throws InterruptedException
      */
-    @Test
-    public void testGroup() throws Exception {
+//    @Test  testGroup()
+    public static void main(String[] args)throws Exception {
 
-        GroupManager group = new CuratorGroupManager("TEST",zooUrl);
+        GroupManager group = new CuratorGroupManager(zooUrl,"TEST");
         group.join("CuratorGroupManager",null);
 
         Thread.currentThread().join();

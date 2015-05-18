@@ -48,7 +48,7 @@ public class CuratorGroupManager implements GroupManager {
             {
                 try
                 {
-                    logger.debug("Re-registering due to reconnection");
+                    logger.info("Re-registering due to reconnection");
                     reRegisterServices();
                 }
                 catch ( Exception e )
@@ -96,6 +96,7 @@ public class CuratorGroupManager implements GroupManager {
             {
                 try
                 {
+                    logger.info("Create Path {} .",path);
                     CreateMode mode = //(service.getServiceType() == ServiceType.DYNAMIC) ?
                             CreateMode.EPHEMERAL ;
                            // : CreateMode.PERSISTENT;
