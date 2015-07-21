@@ -1,0 +1,11 @@
+
+version = '1.0'
+
+apply from: "${rootProject.projectDir}/gradle/nexus.gradle"
+
+
+dependencies {
+
+    compile 'org.slf4j:slf4j-api:1.7.12'
+    compile 'org.apache.curator:curator-recipes:2.8.0'
+}
