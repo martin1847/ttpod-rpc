@@ -1,8 +1,6 @@
 package com.ali.rpc.impl;
 
-import com.ali.rpc.ChannelStub;
 import com.ali.rpc.IZooService;
-import com.ali.rpc.SearchStub;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.framework.recipes.cache.ChildData;
@@ -19,7 +17,6 @@ import javax.annotation.PreDestroy;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * date: 15/7/16 18:22
@@ -30,21 +27,14 @@ public abstract class AbstractZooService<Channel,Stub/* extends SearchStub*/>
         implements IZooService<Channel,Stub>{
 
 
+
+    public final String group;
+    protected ConcurrentMap<String,Channel> channels = new ConcurrentHashMap<>();
     protected static final Logger logger = LoggerFactory.getLogger(AbstractZooService.class);
 
-
-    CuratorFramework curator;
-    public final String group;
-
-    PathChildrenCache groupMembers;
-
-    public ConcurrentMap<String,ChannelStub<Channel,Stub>> channels = new ConcurrentHashMap<>();
-    private volatile ChannelStub<Channel,Stub>[]  stubs;
-
-
-    protected void refreshChannel(){
-        stubs = channels.values().toArray(new ChannelStub[channels.size()]);
-    }
+    protected CuratorFramework curator;
+    private PathChildrenCache groupMembers;
+    private volatile Stub[]  stubs;
 
 
     public AbstractZooService(CuratorFramework curator, String group) {
@@ -71,6 +61,9 @@ public abstract class AbstractZooService<Channel,Stub/* extends SearchStub*/>
     }
 
 
+    protected abstract Stub[]  reBuildStub();
+
+
     @Override
     public boolean available() {
         return stubs.length > 0;
@@ -92,9 +85,11 @@ public abstract class AbstractZooService<Channel,Stub/* extends SearchStub*/>
                 String ipPort =  ZKPaths.getNodeFromPath(data.getPath());
                 if( type == PathChildrenCacheEvent.Type.CHILD_ADDED ){
                     AbstractZooService.this.onChannelAdd(ipPort);
+                    stubs = reBuildStub();
                 }else if( type == PathChildrenCacheEvent.Type.CHILD_REMOVED ){
-                    ChannelStub<Channel,Stub> cf = channels.remove(ipPort);
+                    Channel cf = channels.remove(ipPort);
                     if(null != cf){
+                        stubs = reBuildStub();
                         logger.info(" CHILD_REMOVED , disconnect from {} ", ipPort);
                     }
                     AbstractZooService.this.onChannelRemove(ipPort, cf);
@@ -117,7 +112,7 @@ public abstract class AbstractZooService<Channel,Stub/* extends SearchStub*/>
     int tick; // use AtomicInteger ? not needed..
     @Override
     public Stub next() {// allow i to use twice. Although i not thread safe here,but Almost no effect.
-        return stubs[ ( ++tick & AVOID_OVER_FLOW )  % stubs.length ].stub;
+        return stubs[ ( ++tick & AVOID_OVER_FLOW )  % stubs.length ];
     }
 
 
@@ -131,7 +126,7 @@ public abstract class AbstractZooService<Channel,Stub/* extends SearchStub*/>
             IOUtils.closeStream(groupMembers);
         }
         logger.info("Shutdown channels ...");
-        for(Map.Entry<String,ChannelStub<Channel,Stub>> entry : channels.entrySet()){
+        for(Map.Entry<String,Channel> entry : channels.entrySet()){
             onChannelRemove(entry.getKey(),entry.getValue());
         }
 //ss

@@ -91,15 +91,20 @@ public abstract class AbstractParallelClient<Req,Res>  implements SearchStub<Req
             futures.add(resListenableFuture);
         }
 
+
+        //io.grpc.StatusRuntimeException: UNAVAILABLE: Connection going away, but for unknown reason
+//        Network channel closed
         try {
             for (int i = 0; i < n; ++i) {
-                Res r = completionQueue.take().get();
-                if (canUse(r)) {
-                    return r;
+                try {
+                    Res r = completionQueue.take().get();
+                    if (canUse(r)) {
+                        return r;
+                    }
+                }catch (Exception ignore) {
+                    ignore.printStackTrace();
                 }
             }
-        }catch (Exception ignore) {
-            ignore.printStackTrace();
         }finally {
             for(Future<Res> f :futures ){
                 f.cancel(true);

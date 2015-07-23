@@ -20,7 +20,7 @@ public interface IZooService<Channel,Stub/* extends SearchStub*/> {
 
     void onChannelAdd(String channelConfig);
 
-    void onChannelRemove(String channelConfig, ChannelStub<Channel, Stub> channel);
+    void onChannelRemove(String channelConfig, Channel channel);
 
 
 
