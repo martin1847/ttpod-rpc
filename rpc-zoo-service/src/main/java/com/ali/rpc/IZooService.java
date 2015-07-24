@@ -1,5 +1,7 @@
 package com.ali.rpc;
 
+import javax.annotation.PostConstruct;
+
 /**
  *
  * Zookeeper Service
@@ -10,6 +12,11 @@ package com.ali.rpc;
 public interface IZooService<Channel,Stub/* extends SearchStub*/> {
 
 
+    /**
+     * PostConstruct
+     */
+    @PostConstruct
+    void init();
 
     Stub next();
 
